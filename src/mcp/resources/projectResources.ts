@@ -1,8 +1,5 @@
-import {
-  McpServer,
-  ResourceTemplate,
-} from "@modelcontextprotocol/sdk/server/mcp.js";
-import { n8nServiceV2 } from "../../services/n8nServiceV2.js";
+import { McpServer, ResourceTemplate } from '@modelcontextprotocol/sdk/server/mcp.js';
+import { n8nServiceV2 } from '../../services/n8nServiceV2.js';
 
 /**
  * Register project-related resources with the MCP server
@@ -11,21 +8,21 @@ import { n8nServiceV2 } from "../../services/n8nServiceV2.js";
 export function registerProjectResources(server: McpServer): void {
   // GET /projects - List all projects
   server.resource(
-    "n8nProjects",
-    "n8n://projects",
+    'n8nProjects',
+    'n8n://projects',
     {
-      name: "n8n Projects",
-      description: "Lists all projects in your n8n instance.",
+      name: 'n8n Projects',
+      description: 'Lists all projects in your n8n instance.',
     },
     async (uri) => {
       try {
         // Parse query parameters from the URL
         const url = new URL(uri.href);
         const params: any = {
-          limit: url.searchParams.get("limit")
-            ? parseInt(url.searchParams.get("limit") as string, 10)
+          limit: url.searchParams.get('limit')
+            ? parseInt(url.searchParams.get('limit') as string, 10)
             : undefined,
-          cursor: url.searchParams.get("cursor") || undefined,
+          cursor: url.searchParams.get('cursor') || undefined,
         };
 
         const projects = await n8nServiceV2.getProjects(params);
@@ -38,7 +35,7 @@ export function registerProjectResources(server: McpServer): void {
           ],
         };
       } catch (error) {
-        console.error("Error fetching n8n projects:", error);
+        console.error('Error fetching n8n projects:', error);
         return {
           contents: [
             {

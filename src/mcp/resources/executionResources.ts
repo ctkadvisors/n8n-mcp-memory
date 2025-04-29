@@ -1,8 +1,5 @@
-import {
-  McpServer,
-  ResourceTemplate,
-} from "@modelcontextprotocol/sdk/server/mcp.js";
-import { n8nServiceV2 } from "../../services/n8nServiceV2.js";
+import { McpServer, ResourceTemplate } from '@modelcontextprotocol/sdk/server/mcp.js';
+import { n8nServiceV2 } from '../../services/n8nServiceV2.js';
 
 /**
  * Register execution-related resources with the MCP server
@@ -11,33 +8,29 @@ import { n8nServiceV2 } from "../../services/n8nServiceV2.js";
 export function registerExecutionResources(server: McpServer): void {
   // GET /executions - List all executions
   server.resource(
-    "n8nExecutions",
-    "n8n://executions",
+    'n8nExecutions',
+    'n8n://executions',
     {
-      name: "n8n Executions",
-      description: "Lists all workflow executions in your n8n instance.",
+      name: 'n8n Executions',
+      description: 'Lists all workflow executions in your n8n instance.',
     },
     async (uri) => {
       try {
         // Parse query parameters from the URL
         const url = new URL(uri.href);
         const params: any = {
-          workflowId: url.searchParams.get("workflowId") || undefined,
-          projectId: url.searchParams.get("projectId") || undefined,
-          includeData: url.searchParams.get("includeData") === "true",
-          limit: url.searchParams.get("limit")
-            ? parseInt(url.searchParams.get("limit") as string, 10)
+          workflowId: url.searchParams.get('workflowId') || undefined,
+          projectId: url.searchParams.get('projectId') || undefined,
+          includeData: url.searchParams.get('includeData') === 'true',
+          limit: url.searchParams.get('limit')
+            ? parseInt(url.searchParams.get('limit') as string, 10)
             : undefined,
-          cursor: url.searchParams.get("cursor") || undefined,
+          cursor: url.searchParams.get('cursor') || undefined,
         };
 
         // Handle status parameter with type checking
-        const status = url.searchParams.get("status");
-        if (
-          status === "error" ||
-          status === "success" ||
-          status === "waiting"
-        ) {
+        const status = url.searchParams.get('status');
+        if (status === 'error' || status === 'success' || status === 'waiting') {
           params.status = status;
         }
 
@@ -51,7 +44,7 @@ export function registerExecutionResources(server: McpServer): void {
           ],
         };
       } catch (error) {
-        console.error("Error fetching n8n executions:", error);
+        console.error('Error fetching n8n executions:', error);
         return {
           contents: [
             {
@@ -69,11 +62,11 @@ export function registerExecutionResources(server: McpServer): void {
 
   // GET /executions/{id} - Get an execution by ID
   server.resource(
-    "n8nExecution",
-    new ResourceTemplate("n8n://executions/{executionId}", { list: undefined }),
+    'n8nExecution',
+    new ResourceTemplate('n8n://executions/{executionId}', { list: undefined }),
     {
-      name: "n8n Execution Details",
-      description: "Gets details of a specific workflow execution by ID.",
+      name: 'n8n Execution Details',
+      description: 'Gets details of a specific workflow execution by ID.',
     },
     async (uri, params) => {
       try {
@@ -85,7 +78,7 @@ export function registerExecutionResources(server: McpServer): void {
 
         // Parse query parameters from the URL
         const url = new URL(uri.href);
-        const includeData = url.searchParams.get("includeData") === "true";
+        const includeData = url.searchParams.get('includeData') === 'true';
 
         const execution = await n8nServiceV2.getExecution(id, includeData);
         return {
@@ -97,10 +90,7 @@ export function registerExecutionResources(server: McpServer): void {
           ],
         };
       } catch (error) {
-        console.error(
-          `Error fetching n8n execution ${params.executionId}:`,
-          error
-        );
+        console.error(`Error fetching n8n execution ${params.executionId}:`, error);
         return {
           contents: [
             {

@@ -5,9 +5,9 @@
  * using vector embeddings for semantic search capabilities.
  */
 
-import { Pool } from "pg";
-import { NodeDocumentation } from "./docFetcher.js";
-import { EmbeddingService, LocalEmbeddingService } from "./embeddingService.js";
+import { Pool } from 'pg';
+import { NodeDocumentation } from './docFetcher.js';
+import { EmbeddingService, LocalEmbeddingService } from './embeddingService.js';
 
 // Configuration for the PostgreSQL connection
 interface DbConfig {
@@ -56,12 +56,12 @@ export class VectorStore {
     useInMemoryStore: boolean = false
   ) {
     this.useInMemoryStore = useInMemoryStore || config === null;
-    
+
     // Initialize database connection if using PostgreSQL
     if (!this.useInMemoryStore && config) {
       this.pool = new Pool(config);
     }
-    
+
     // Use provided embedding service or create a local one
     this.embeddingService = embeddingService || new LocalEmbeddingService();
   }
@@ -78,21 +78,21 @@ export class VectorStore {
       if (this.embeddingService instanceof LocalEmbeddingService) {
         await (this.embeddingService as LocalEmbeddingService).initialize();
       }
-      
+
       // If using PostgreSQL, initialize the database
       if (!this.useInMemoryStore && this.pool) {
         // Check if pgvector extension is available
         try {
-          await this.pool.query(`CREATE EXTENSION IF NOT EXISTS vector;`);
-        } catch (error) {
-          console.warn("pgvector extension not available, falling back to in-memory storage");
+          await this.pool.query('CREATE EXTENSION IF NOT EXISTS vector;');
+        } catch (_error) {
+          console.warn('pgvector extension not available, falling back to in-memory storage');
           this.useInMemoryStore = true;
           if (this.pool) {
             await this.pool.end();
             this.pool = null;
           }
         }
-        
+
         // If we still want to use PostgreSQL, create the necessary tables
         if (!this.useInMemoryStore && this.pool) {
           // Create table for node documentation
@@ -122,21 +122,23 @@ export class VectorStore {
       }
 
       this.initialized = true;
-      console.log(`Vector store initialized successfully (using ${this.useInMemoryStore ? 'in-memory storage' : 'PostgreSQL'})`);
+      console.log(
+        `Vector store initialized successfully (using ${this.useInMemoryStore ? 'in-memory storage' : 'PostgreSQL'})`
+      );
     } catch (error) {
-      console.error("Error initializing vector store:", error);
+      console.error('Error initializing vector store:', error);
       // Fall back to in-memory storage if database initialization fails
       this.useInMemoryStore = true;
       if (this.pool) {
         try {
           await this.pool.end();
         } catch (e) {
-          console.error("Error closing pool:", e);
+          console.error('Error closing pool:', e);
         }
         this.pool = null;
       }
       this.initialized = true;
-      console.log("Falling back to in-memory storage due to initialization error");
+      console.log('Falling back to in-memory storage due to initialization error');
     }
   }
 
@@ -146,24 +148,21 @@ export class VectorStore {
    * @param doc - The node documentation to store
    * @param embedding - The vector embedding for the documentation (optional)
    */
-  async storeDocumentation(
-    doc: NodeDocumentation,
-    embedding?: number[]
-  ): Promise<void> {
+  async storeDocumentation(doc: NodeDocumentation, embedding?: number[]): Promise<void> {
     if (!this.initialized) {
       await this.initialize();
     }
-    
+
     try {
       // Generate embedding if not provided
-      const docEmbedding = embedding || await this.generateEmbeddingForDoc(doc);
-      
+      const docEmbedding = embedding || (await this.generateEmbeddingForDoc(doc));
+
       // Store in the appropriate storage system
       if (this.useInMemoryStore) {
         // Store in memory
         this.inMemoryStore.set(doc.nodeType, {
           doc,
-          embedding: docEmbedding
+          embedding: docEmbedding,
         });
       } else if (this.pool) {
         // Store in PostgreSQL
@@ -207,7 +206,7 @@ export class VectorStore {
 
   /**
    * Generate embedding for a node documentation
-   * 
+   *
    * @param doc - The node documentation
    * @returns The embedding vector
    */
@@ -216,10 +215,10 @@ export class VectorStore {
     const text = [
       doc.displayName,
       doc.description,
-      ...doc.parameters.map(p => `${p.name}: ${p.description}`),
-      ...doc.examples.map(e => `${e.title} ${e.description}`)
-    ].join(" ");
-    
+      ...doc.parameters.map((p) => `${p.name}: ${p.description}`),
+      ...doc.examples.map((e) => `${e.title} ${e.description}`),
+    ].join(' ');
+
     // Generate embedding
     return await this.embeddingService.generateEmbedding(text);
   }
@@ -234,7 +233,7 @@ export class VectorStore {
     if (!this.initialized) {
       await this.initialize();
     }
-    
+
     try {
       if (this.useInMemoryStore) {
         // Get from in-memory store
@@ -269,7 +268,7 @@ export class VectorStore {
           fetchedAt: row.fetched_at,
         };
       }
-      
+
       return null;
     } catch (error) {
       console.error(`Error getting documentation for ${nodeType}:`, error);
@@ -284,22 +283,19 @@ export class VectorStore {
    * @param limit - Maximum number of results to return
    * @returns Array of search results sorted by relevance
    */
-  async semanticSearch(
-    query: string,
-    limit: number = 5
-  ): Promise<SearchResult[]> {
+  async semanticSearch(query: string, limit: number = 5): Promise<SearchResult[]> {
     if (!this.initialized) {
       await this.initialize();
     }
-    
+
     try {
       // Generate embedding for the query
       const queryEmbedding = await this.embeddingService.generateEmbedding(query);
-      
+
       if (this.useInMemoryStore) {
         // Search in-memory store
         const results: SearchResult[] = [];
-        
+
         // Calculate similarity for each document
         for (const [nodeType, entry] of this.inMemoryStore.entries()) {
           // Use cosine similarity from the embedding service
@@ -307,7 +303,7 @@ export class VectorStore {
             queryEmbedding,
             entry.embedding
           );
-          
+
           // Add to results if similarity is positive
           if (similarity > 0) {
             results.push({
@@ -315,15 +311,13 @@ export class VectorStore {
               displayName: entry.doc.displayName,
               description: entry.doc.description,
               relevance: similarity,
-              snippet: this.generateSnippet(entry.doc, query)
+              snippet: this.generateSnippet(entry.doc, query),
             });
           }
         }
-        
+
         // Sort by relevance (highest first) and limit results
-        return results
-          .sort((a, b) => b.relevance - a.relevance)
-          .slice(0, limit);
+        return results.sort((a, b) => b.relevance - a.relevance).slice(0, limit);
       } else if (this.pool) {
         // Search in PostgreSQL using vector similarity
         const result = await this.pool.query(
@@ -345,17 +339,17 @@ export class VectorStore {
           relevance: row.relevance,
         }));
       }
-      
+
       return [];
     } catch (error) {
-      console.error("Error performing semantic search:", error);
+      console.error('Error performing semantic search:', error);
       throw error;
     }
   }
-  
+
   /**
    * Generate a snippet from the document that matches the query
-   * 
+   *
    * @param doc - The node documentation
    * @param query - The search query
    * @returns A relevant snippet from the documentation
@@ -363,37 +357,37 @@ export class VectorStore {
   private generateSnippet(doc: NodeDocumentation, query: string): string {
     // Lowercase query terms for case-insensitive matching
     const queryTerms = query.toLowerCase().split(/\s+/);
-    
+
     // Look for matches in parameters
     for (const param of doc.parameters) {
       const paramText = `${param.name}: ${param.description}`.toLowerCase();
-      if (queryTerms.some(term => paramText.includes(term))) {
+      if (queryTerms.some((term) => paramText.includes(term))) {
         return `Parameter: ${param.name} - ${param.description}`;
       }
     }
-    
+
     // Look for matches in examples
     for (const example of doc.examples) {
       const exampleText = `${example.title} ${example.description}`.toLowerCase();
-      if (queryTerms.some(term => exampleText.includes(term))) {
+      if (queryTerms.some((term) => exampleText.includes(term))) {
         return `Example: ${example.title} - ${example.description.substring(0, 100)}...`;
       }
     }
-    
+
     // Default to description
     return doc.description;
   }
 
   /**
    * Get all stored node types
-   * 
+   *
    * @returns Array of node types
    */
   async getAllNodeTypes(): Promise<string[]> {
     if (!this.initialized) {
       await this.initialize();
     }
-    
+
     try {
       if (this.useInMemoryStore) {
         return Array.from(this.inMemoryStore.keys());
@@ -401,13 +395,13 @@ export class VectorStore {
         const result = await this.pool.query(`
           SELECT node_type FROM node_documentation
         `);
-        
-        return result.rows.map(row => row.node_type);
+
+        return result.rows.map((row) => row.node_type);
       }
-      
+
       return [];
     } catch (error) {
-      console.error("Error getting all node types:", error);
+      console.error('Error getting all node types:', error);
       throw error;
     }
   }
@@ -427,39 +421,39 @@ export class VectorStore {
 async function main() {
   // Create a local embedding service
   const embeddingService = new LocalEmbeddingService();
-  
+
   // Create a vector store with in-memory storage
   const store = new VectorStore(null, embeddingService, true);
   await store.initialize();
 
   // Example documentation
   const exampleDoc: NodeDocumentation = {
-    nodeType: "n8n-nodes-base.example",
-    displayName: "Example Node",
-    description: "This is an example node for demonstration purposes.",
-    version: "1.0",
+    nodeType: 'n8n-nodes-base.example',
+    displayName: 'Example Node',
+    description: 'This is an example node for demonstration purposes.',
+    version: '1.0',
     parameters: [
       {
-        name: "url",
-        type: "string",
-        description: "The URL to connect to",
-        required: true
+        name: 'url',
+        type: 'string',
+        description: 'The URL to connect to',
+        required: true,
       },
       {
-        name: "method",
-        type: "string",
-        description: "The HTTP method to use",
-        required: false
-      }
+        name: 'method',
+        type: 'string',
+        description: 'The HTTP method to use',
+        required: false,
+      },
     ],
     examples: [
       {
-        title: "Basic usage",
-        description: "This example shows how to use the node for a simple request.",
-        code: "{ url: 'https://example.com' }"
-      }
+        title: 'Basic usage',
+        description: 'This example shows how to use the node for a simple request.',
+        code: "{ url: 'https://example.com' }",
+      },
     ],
-    sourceUrl: "https://example.com",
+    sourceUrl: 'https://example.com',
     fetchedAt: new Date(),
   };
 
@@ -467,12 +461,12 @@ async function main() {
   await store.storeDocumentation(exampleDoc);
 
   // Retrieve the documentation
-  const retrievedDoc = await store.getByNodeType("n8n-nodes-base.example");
-  console.log("Retrieved documentation:", retrievedDoc);
+  const retrievedDoc = await store.getByNodeType('n8n-nodes-base.example');
+  console.log('Retrieved documentation:', retrievedDoc);
 
   // Perform a semantic search
-  const searchResults = await store.semanticSearch("url connection request", 3);
-  console.log("Search results:", searchResults);
+  const searchResults = await store.semanticSearch('url connection request', 3);
+  console.log('Search results:', searchResults);
 
   // Close the connection
   await store.close();

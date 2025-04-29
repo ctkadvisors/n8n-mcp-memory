@@ -1,8 +1,5 @@
-import {
-  McpServer,
-  ResourceTemplate,
-} from "@modelcontextprotocol/sdk/server/mcp.js";
-import { n8nServiceV2 } from "../../services/n8nServiceV2.js";
+import { McpServer, ResourceTemplate } from '@modelcontextprotocol/sdk/server/mcp.js';
+import { n8nServiceV2 } from '../../services/n8nServiceV2.js';
 
 /**
  * Register workflow-related resources with the MCP server
@@ -11,11 +8,11 @@ import { n8nServiceV2 } from "../../services/n8nServiceV2.js";
 export function registerWorkflowResources(server: McpServer): void {
   // GET /workflows - List all workflows
   server.resource(
-    "n8nWorkflows",
-    "n8n://workflows",
+    'n8nWorkflows',
+    'n8n://workflows',
     {
-      name: "n8n Workflows",
-      description: "Lists all workflows in your n8n instance.",
+      name: 'n8n Workflows',
+      description: 'Lists all workflows in your n8n instance.',
     },
     async (uri) => {
       try {
@@ -29,7 +26,7 @@ export function registerWorkflowResources(server: McpServer): void {
           ],
         };
       } catch (error) {
-        console.error("Error fetching n8n workflows:", error);
+        console.error('Error fetching n8n workflows:', error);
         return {
           contents: [
             {
@@ -47,11 +44,11 @@ export function registerWorkflowResources(server: McpServer): void {
 
   // GET /workflows/{id} - Get a workflow by ID
   server.resource(
-    "n8nWorkflow",
-    new ResourceTemplate("n8n://workflows/{workflowId}", { list: undefined }),
+    'n8nWorkflow',
+    new ResourceTemplate('n8n://workflows/{workflowId}', { list: undefined }),
     {
-      name: "n8n Workflow Details",
-      description: "Gets details of a specific workflow by ID.",
+      name: 'n8n Workflow Details',
+      description: 'Gets details of a specific workflow by ID.',
     },
     async (uri, { workflowId }) => {
       try {
@@ -85,13 +82,13 @@ export function registerWorkflowResources(server: McpServer): void {
 
   // GET /workflows/{id}/tags - Get workflow tags
   server.resource(
-    "n8nWorkflowTags",
-    new ResourceTemplate("n8n://workflows/{workflowId}/tags", {
+    'n8nWorkflowTags',
+    new ResourceTemplate('n8n://workflows/{workflowId}/tags', {
       list: undefined,
     }),
     {
-      name: "n8n Workflow Tags",
-      description: "Gets tags associated with a specific workflow.",
+      name: 'n8n Workflow Tags',
+      description: 'Gets tags associated with a specific workflow.',
     },
     async (uri, { workflowId }) => {
       try {

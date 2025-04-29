@@ -1,4 +1,4 @@
-import { N8nClient } from "../api/n8nClient.js";
+import { N8nClient } from '../api/n8nClient.js';
 import {
   Workflow,
   WorkflowListParams,
@@ -33,8 +33,8 @@ import {
   ImportResult,
   AuditOptions,
   AuditReport,
-} from "../types/n8n.js";
-import env from "../utils/env.js";
+} from '../types/n8n.js';
+import env from '../utils/env.js';
 
 /**
  * Service for interacting with the n8n API
@@ -58,13 +58,11 @@ export class N8nServiceV2 {
    * @param params Optional parameters for filtering workflows
    * @returns A list of workflows
    */
-  async getWorkflows(
-    params?: WorkflowListParams
-  ): Promise<WorkflowListResponse> {
+  async getWorkflows(params?: WorkflowListParams): Promise<WorkflowListResponse> {
     try {
       return await this.client.getWorkflows(params);
     } catch (error) {
-      console.error("Error fetching workflows:", error);
+      console.error('Error fetching workflows:', error);
       throw error;
     }
   }
@@ -75,10 +73,7 @@ export class N8nServiceV2 {
    * @param excludePinnedData Whether to exclude pinned data
    * @returns The workflow
    */
-  async getWorkflow(
-    id: string,
-    excludePinnedData?: boolean
-  ): Promise<Workflow> {
+  async getWorkflow(id: string, excludePinnedData?: boolean): Promise<Workflow> {
     try {
       return await this.client.getWorkflow(id, excludePinnedData);
     } catch (error) {
@@ -96,7 +91,7 @@ export class N8nServiceV2 {
     try {
       return await this.client.createWorkflow(workflow);
     } catch (error) {
-      console.error("Error creating workflow:", error);
+      console.error('Error creating workflow:', error);
       throw error;
     }
   }
@@ -164,10 +159,7 @@ export class N8nServiceV2 {
    * @param destinationProjectId The destination project ID
    * @returns The transfer result
    */
-  async transferWorkflow(
-    id: string,
-    destinationProjectId: string
-  ): Promise<any> {
+  async transferWorkflow(id: string, destinationProjectId: string): Promise<any> {
     try {
       const params: WorkflowTransferParams = { destinationProjectId };
       return await this.client.transferWorkflow(id, params);
@@ -197,16 +189,10 @@ export class N8nServiceV2 {
    * @param tagIds The tag IDs
    * @returns The updated workflow tags
    */
-  async updateWorkflowTags(
-    id: string,
-    tagIds: { id: string }[]
-  ): Promise<Tag[]> {
+  async updateWorkflowTags(id: string, tagIds: { id: string }[]): Promise<Tag[]> {
     try {
       // The API expects the tagIds array directly, not wrapped in an object
-      console.log(
-        `Updating tags for workflow ${id} with tagIds:`,
-        JSON.stringify(tagIds)
-      );
+      console.log(`Updating tags for workflow ${id} with tagIds:`, JSON.stringify(tagIds));
       return await this.client.updateWorkflowTags(id, tagIds);
     } catch (error) {
       console.error(`Error updating tags for workflow ${id}:`, error);
@@ -225,7 +211,7 @@ export class N8nServiceV2 {
     try {
       return await this.client.createCredential(credential);
     } catch (error) {
-      console.error("Error creating credential:", error);
+      console.error('Error creating credential:', error);
       throw error;
     }
   }
@@ -249,16 +235,11 @@ export class N8nServiceV2 {
    * @param credentialTypeName The credential type name
    * @returns The credential schema
    */
-  async getCredentialSchema(
-    credentialTypeName: string
-  ): Promise<CredentialSchema> {
+  async getCredentialSchema(credentialTypeName: string): Promise<CredentialSchema> {
     try {
       return await this.client.getCredentialSchema(credentialTypeName);
     } catch (error) {
-      console.error(
-        `Error getting credential schema for ${credentialTypeName}:`,
-        error
-      );
+      console.error(`Error getting credential schema for ${credentialTypeName}:`, error);
       throw error;
     }
   }
@@ -269,10 +250,7 @@ export class N8nServiceV2 {
    * @param params The transfer parameters
    * @returns Success status
    */
-  async transferCredential(
-    id: string,
-    params: CredentialTransferParams
-  ): Promise<void> {
+  async transferCredential(id: string, params: CredentialTransferParams): Promise<void> {
     try {
       return await this.client.transferCredential(id, params);
     } catch (error) {
@@ -288,13 +266,11 @@ export class N8nServiceV2 {
    * @param params Optional parameters for filtering executions
    * @returns A list of executions
    */
-  async getExecutions(
-    params?: ExecutionListParams
-  ): Promise<ExecutionListResponse> {
+  async getExecutions(params?: ExecutionListParams): Promise<ExecutionListResponse> {
     try {
       return await this.client.getExecutions(params);
     } catch (error) {
-      console.error("Error fetching executions:", error);
+      console.error('Error fetching executions:', error);
       throw error;
     }
   }
@@ -334,10 +310,7 @@ export class N8nServiceV2 {
    * @param params Optional parameters for the execution
    * @returns The execution result
    */
-  async executeWorkflow(
-    id: string,
-    params?: WorkflowExecuteParams
-  ): Promise<Execution> {
+  async executeWorkflow(id: string, params?: WorkflowExecuteParams): Promise<Execution> {
     try {
       return await this.client.executeWorkflow(id, params);
     } catch (error) {
@@ -357,7 +330,7 @@ export class N8nServiceV2 {
     try {
       return await this.client.getUsers(params);
     } catch (error) {
-      console.error("Error fetching users:", error);
+      console.error('Error fetching users:', error);
       throw error;
     }
   }
@@ -386,7 +359,7 @@ export class N8nServiceV2 {
     try {
       return await this.client.createUsers(users);
     } catch (error) {
-      console.error("Error creating users:", error);
+      console.error('Error creating users:', error);
       throw error;
     }
   }
@@ -411,10 +384,7 @@ export class N8nServiceV2 {
    * @param params The role change parameters
    * @returns Success status
    */
-  async changeUserRole(
-    idOrEmail: string,
-    params: ChangeRoleParams
-  ): Promise<void> {
+  async changeUserRole(idOrEmail: string, params: ChangeRoleParams): Promise<void> {
     try {
       return await this.client.changeUserRole(idOrEmail, params);
     } catch (error) {
@@ -435,7 +405,7 @@ export class N8nServiceV2 {
     try {
       return await this.client.getTags(limit, cursor);
     } catch (error) {
-      console.error("Error fetching tags:", error);
+      console.error('Error fetching tags:', error);
       throw error;
     }
   }
@@ -463,7 +433,7 @@ export class N8nServiceV2 {
     try {
       return await this.client.createTag(tag);
     } catch (error) {
-      console.error("Error creating tag:", error);
+      console.error('Error creating tag:', error);
       throw error;
     }
   }
@@ -508,7 +478,7 @@ export class N8nServiceV2 {
     try {
       return await this.client.getProjects(params);
     } catch (error) {
-      console.error("Error fetching projects:", error);
+      console.error('Error fetching projects:', error);
       throw error;
     }
   }
@@ -522,7 +492,7 @@ export class N8nServiceV2 {
     try {
       return await this.client.createProject(project);
     } catch (error) {
-      console.error("Error creating project:", error);
+      console.error('Error creating project:', error);
       throw error;
     }
   }
@@ -563,13 +533,11 @@ export class N8nServiceV2 {
    * @param params Optional parameters for filtering variables
    * @returns A list of variables
    */
-  async getVariables(
-    params?: VariableListParams
-  ): Promise<VariableListResponse> {
+  async getVariables(params?: VariableListParams): Promise<VariableListResponse> {
     try {
       return await this.client.getVariables(params);
     } catch (error) {
-      console.error("Error fetching variables:", error);
+      console.error('Error fetching variables:', error);
       throw error;
     }
   }
@@ -583,7 +551,7 @@ export class N8nServiceV2 {
     try {
       return await this.client.createVariable(variable);
     } catch (error) {
-      console.error("Error creating variable:", error);
+      console.error('Error creating variable:', error);
       throw error;
     }
   }
@@ -613,7 +581,7 @@ export class N8nServiceV2 {
     try {
       return await this.client.pullFromSourceControl(options);
     } catch (error) {
-      console.error("Error pulling from source control:", error);
+      console.error('Error pulling from source control:', error);
       throw error;
     }
   }
@@ -629,7 +597,7 @@ export class N8nServiceV2 {
     try {
       return await this.client.generateAudit(options);
     } catch (error) {
-      console.error("Error generating audit:", error);
+      console.error('Error generating audit:', error);
       throw error;
     }
   }

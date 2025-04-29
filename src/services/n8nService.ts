@@ -1,16 +1,16 @@
-import { ApiError } from "../api/generated/core/ApiError.js";
-import { OpenAPI } from "../api/generated/core/OpenAPI.js";
-import { WorkflowService } from "../api/generated/services/WorkflowService.js";
-import { TagsService } from "../api/generated/services/TagsService.js";
-import { ExecutionService } from "../api/generated/services/ExecutionService.js";
-import env from "../utils/env.js";
+import { ApiError } from '../api/generated/core/ApiError.js';
+import { OpenAPI } from '../api/generated/core/OpenAPI.js';
+import { WorkflowService } from '../api/generated/services/WorkflowService.js';
+import { TagsService } from '../api/generated/services/TagsService.js';
+import { ExecutionService } from '../api/generated/services/ExecutionService.js';
+import env from '../utils/env.js';
 
 // Initialize the OpenAPI configuration
 OpenAPI.BASE = env.N8N_API_URL;
 OpenAPI.WITH_CREDENTIALS = false;
 OpenAPI.HEADERS = {
-  "X-N8N-API-KEY": env.N8N_API_KEY,
-  "Content-Type": "application/json",
+  'X-N8N-API-KEY': env.N8N_API_KEY,
+  'Content-Type': 'application/json',
 };
 
 /**
@@ -28,7 +28,7 @@ export class N8nService {
       if (error instanceof ApiError) {
         console.error(`API Error: ${error.status} - ${error.message}`);
       } else {
-        console.error("Unknown error:", error);
+        console.error('Unknown error:', error);
       }
       throw error;
     }
@@ -47,7 +47,7 @@ export class N8nService {
       if (error instanceof ApiError) {
         console.error(`API Error: ${error.status} - ${error.message}`);
       } else {
-        console.error("Unknown error:", error);
+        console.error('Unknown error:', error);
       }
       throw error;
     }
@@ -64,7 +64,7 @@ export class N8nService {
       if (error instanceof ApiError) {
         console.error(`API Error: ${error.status} - ${error.message}`);
       } else {
-        console.error("Unknown error:", error);
+        console.error('Unknown error:', error);
       }
       throw error;
     }
@@ -81,7 +81,7 @@ export class N8nService {
       if (error instanceof ApiError) {
         console.error(`API Error: ${error.status} - ${error.message}`);
       } else {
-        console.error("Unknown error:", error);
+        console.error('Unknown error:', error);
       }
       throw error;
     }

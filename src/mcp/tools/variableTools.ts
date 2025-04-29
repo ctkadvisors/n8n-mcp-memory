@@ -1,7 +1,7 @@
-import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-import { z } from "zod";
-import { n8nServiceV2 } from "../../services/n8nServiceV2.js";
-import { formatError } from "../../utils/errorHandling.js";
+import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
+import { z } from 'zod';
+import { n8nServiceV2 } from '../../services/n8nServiceV2.js';
+import { formatError } from '../../utils/errorHandling.js';
 
 // Define schemas for variable-related operations
 const createVariableSchema = {
@@ -20,8 +20,8 @@ const variableIdSchema = {
 export function registerVariableTools(server: McpServer): void {
   // POST /variables - Create a variable
   server.tool(
-    "createVariable",
-    "Creates a new variable in n8n. Requires key and value parameters.",
+    'createVariable',
+    'Creates a new variable in n8n. Requires key and value parameters.',
     createVariableSchema,
     async (args) => {
       try {
@@ -30,13 +30,13 @@ export function registerVariableTools(server: McpServer): void {
         return {
           content: [
             {
-              type: "text",
+              type: 'text',
               text: `Variable "${key}" created successfully`,
             },
           ],
         };
       } catch (error) {
-        console.error(`Error creating variable:`, error);
+        console.error('Error creating variable:', error);
 
         // Use the formatError utility to properly handle ApiError objects
         const errorMessage = formatError(error);
@@ -44,7 +44,7 @@ export function registerVariableTools(server: McpServer): void {
         return {
           content: [
             {
-              type: "text",
+              type: 'text',
               text: `Error creating variable: ${errorMessage}`,
             },
           ],
@@ -56,8 +56,8 @@ export function registerVariableTools(server: McpServer): void {
 
   // DELETE /variables/{id} - Delete a variable
   server.tool(
-    "deleteVariable",
-    "Deletes a variable from n8n. Requires variableId parameter.",
+    'deleteVariable',
+    'Deletes a variable from n8n. Requires variableId parameter.',
     variableIdSchema,
     async (args) => {
       try {
@@ -66,13 +66,13 @@ export function registerVariableTools(server: McpServer): void {
         return {
           content: [
             {
-              type: "text",
+              type: 'text',
               text: `Variable ${variableId} deleted successfully`,
             },
           ],
         };
       } catch (error) {
-        console.error(`Error deleting variable:`, error);
+        console.error('Error deleting variable:', error);
 
         // Use the formatError utility to properly handle ApiError objects
         const errorMessage = formatError(error);
@@ -80,7 +80,7 @@ export function registerVariableTools(server: McpServer): void {
         return {
           content: [
             {
-              type: "text",
+              type: 'text',
               text: `Error deleting variable: ${errorMessage}`,
             },
           ],

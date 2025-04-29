@@ -1,14 +1,14 @@
-import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-import { z } from "zod";
-import { n8nServiceV2 } from "../../services/n8nServiceV2.js";
-import { formatError } from "../../utils/errorHandling.js";
+import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
+import { z } from 'zod';
+import { n8nServiceV2 } from '../../services/n8nServiceV2.js';
+import { formatError } from '../../utils/errorHandling.js';
 
 // Define schemas for workflow-related operations
 const workflowSettingsSchema = z.object({
   saveExecutionProgress: z.boolean().optional(),
   saveManualExecutions: z.boolean().optional(),
-  saveDataErrorExecution: z.enum(["all", "none"]).optional(),
-  saveDataSuccessExecution: z.enum(["all", "none"]).optional(),
+  saveDataErrorExecution: z.enum(['all', 'none']).optional(),
+  saveDataSuccessExecution: z.enum(['all', 'none']).optional(),
   executionTimeout: z.number().optional(),
   errorWorkflow: z.string().optional(),
   timezone: z.string().optional(),
@@ -47,8 +47,8 @@ const transferWorkflowSchema = {
 export function registerWorkflowTools(server: McpServer): void {
   // GET /workflows - List all workflows
   server.tool(
-    "listWorkflows",
-    "Lists all workflows in your n8n instance. Optional parameters: active, tags, name, projectId.",
+    'listWorkflows',
+    'Lists all workflows in your n8n instance. Optional parameters: active, tags, name, projectId.',
     {
       active: z.boolean().optional(),
       tags: z.string().optional(),
@@ -75,22 +75,22 @@ export function registerWorkflowTools(server: McpServer): void {
         return {
           content: [
             {
-              type: "text",
+              type: 'text',
               text: `Found ${result.data.length} workflows`,
             },
             {
-              type: "text",
+              type: 'text',
               text: JSON.stringify(formattedWorkflows, null, 2),
             },
           ],
           data: result,
         };
       } catch (error) {
-        console.error("Error listing workflows:", error);
+        console.error('Error listing workflows:', error);
         return {
           content: [
             {
-              type: "text",
+              type: 'text',
               text: `Error listing workflows: ${
                 error instanceof Error ? error.message : String(error)
               }`,
@@ -104,8 +104,8 @@ export function registerWorkflowTools(server: McpServer): void {
 
   // GET /workflows/{id} - Get a workflow by ID
   server.tool(
-    "getWorkflowDetails",
-    "Gets detailed information about a specific workflow by ID.",
+    'getWorkflowDetails',
+    'Gets detailed information about a specific workflow by ID.',
     {
       workflowId: z.string(),
       excludePinnedData: z.boolean().optional(),
@@ -113,10 +113,7 @@ export function registerWorkflowTools(server: McpServer): void {
     async (args) => {
       try {
         const { workflowId, excludePinnedData } = args;
-        const workflow = await n8nServiceV2.getWorkflow(
-          workflowId,
-          excludePinnedData
-        );
+        const workflow = await n8nServiceV2.getWorkflow(workflowId, excludePinnedData);
 
         // Format the workflow data for better readability
         const formattedWorkflow = {
@@ -139,22 +136,22 @@ export function registerWorkflowTools(server: McpServer): void {
         return {
           content: [
             {
-              type: "text",
+              type: 'text',
               text: `Workflow details for: ${workflow.name} (ID: ${workflow.id})`,
             },
             {
-              type: "text",
+              type: 'text',
               text: JSON.stringify(formattedWorkflow, null, 2),
             },
           ],
           data: workflow,
         };
       } catch (error) {
-        console.error(`Error getting workflow details:`, error);
+        console.error('Error getting workflow details:', error);
         return {
           content: [
             {
-              type: "text",
+              type: 'text',
               text: `Error getting workflow details: ${
                 error instanceof Error ? error.message : String(error)
               }`,
@@ -167,7 +164,7 @@ export function registerWorkflowTools(server: McpServer): void {
   );
   // POST /workflows - Create a workflow
   server.tool(
-    "createWorkflow",
+    'createWorkflow',
     `Creates a new workflow in n8n. Provide a complete workflow definition in a single call.
 
 IMPORTANT: Create the entire workflow in one step rather than adding nodes incrementally.
@@ -253,16 +250,16 @@ Notes:
         let settings = args.settings || {};
 
         // Handle case where connections or settings are provided as strings
-        if (typeof connections === "string") {
+        if (typeof connections === 'string') {
           try {
             connections = JSON.parse(connections);
           } catch (e) {
-            console.error("Error parsing connections string:", e);
+            console.error('Error parsing connections string:', e);
             return {
               content: [
                 {
-                  type: "text",
-                  text: `Error creating workflow: connections must be a valid JSON object, not a string. Please remove quotes/backticks around the connections object.`,
+                  type: 'text',
+                  text: 'Error creating workflow: connections must be a valid JSON object, not a string. Please remove quotes/backticks around the connections object.',
                 },
               ],
               isError: true,
@@ -270,16 +267,16 @@ Notes:
           }
         }
 
-        if (typeof settings === "string") {
+        if (typeof settings === 'string') {
           try {
             settings = JSON.parse(settings);
           } catch (e) {
-            console.error("Error parsing settings string:", e);
+            console.error('Error parsing settings string:', e);
             return {
               content: [
                 {
-                  type: "text",
-                  text: `Error creating workflow: settings must be a valid JSON object, not a string. Please remove quotes/backticks around the settings object.`,
+                  type: 'text',
+                  text: 'Error creating workflow: settings must be a valid JSON object, not a string. Please remove quotes/backticks around the settings object.',
                 },
               ],
               isError: true,
@@ -289,7 +286,7 @@ Notes:
 
         // Log the workflow data for debugging
         console.log(
-          "Creating workflow with data:",
+          'Creating workflow with data:',
           JSON.stringify(
             {
               name: args.name,
@@ -310,17 +307,14 @@ Notes:
 
         // Log the full workflow object for debugging
         console.log(
-          "Full workflow object:",
+          'Full workflow object:',
           JSON.stringify(
             {
               name: workflow.name,
               nodesCount: workflow.nodes?.length || 0,
               hasConnections:
-                !!workflow.connections &&
-                Object.keys(workflow.connections).length > 0,
-              hasSettings:
-                !!workflow.settings &&
-                Object.keys(workflow.settings).length > 0,
+                !!workflow.connections && Object.keys(workflow.connections).length > 0,
+              hasSettings: !!workflow.settings && Object.keys(workflow.settings).length > 0,
             },
             null,
             2
@@ -331,25 +325,25 @@ Notes:
         return {
           content: [
             {
-              type: "text",
+              type: 'text',
               text: `Workflow created successfully: ${result.id}`,
             },
           ],
           data: result,
         };
       } catch (error) {
-        console.error("Error creating workflow:", error);
+        console.error('Error creating workflow:', error);
 
         // Provide more detailed error information
-        let errorMessage = "Error creating workflow: ";
+        let errorMessage = 'Error creating workflow: ';
 
         if (error instanceof Error) {
           errorMessage += error.message;
-        } else if (typeof error === "object") {
+        } else if (typeof error === 'object') {
           try {
             errorMessage += JSON.stringify(error, null, 2);
-          } catch (e) {
-            errorMessage += "Unserializable error object";
+          } catch (_e) {
+            errorMessage += 'Unserializable error object';
           }
         } else {
           errorMessage += String(error);
@@ -358,7 +352,7 @@ Notes:
         return {
           content: [
             {
-              type: "text",
+              type: 'text',
               text: errorMessage,
             },
           ],
@@ -370,7 +364,7 @@ Notes:
 
   // PUT /workflows/{id} - Update a workflow
   server.tool(
-    "updateWorkflow",
+    'updateWorkflow',
     `Updates an existing workflow in n8n. Requires workflowId and workflowData.
 
 IMPORTANT: You must provide the complete workflow definition in workflowData.
@@ -437,16 +431,16 @@ Note: Do not include properties like "callerPolicy" or other non-standard proper
         let settings = workflowData.settings || {};
 
         // Handle case where connections or settings are provided as strings
-        if (typeof connections === "string") {
+        if (typeof connections === 'string') {
           try {
             connections = JSON.parse(connections);
           } catch (e) {
-            console.error("Error parsing connections string:", e);
+            console.error('Error parsing connections string:', e);
             return {
               content: [
                 {
-                  type: "text",
-                  text: `Error updating workflow: connections must be a valid JSON object, not a string. Please remove quotes/backticks around the connections object.`,
+                  type: 'text',
+                  text: 'Error updating workflow: connections must be a valid JSON object, not a string. Please remove quotes/backticks around the connections object.',
                 },
               ],
               isError: true,
@@ -454,16 +448,16 @@ Note: Do not include properties like "callerPolicy" or other non-standard proper
           }
         }
 
-        if (typeof settings === "string") {
+        if (typeof settings === 'string') {
           try {
             settings = JSON.parse(settings);
           } catch (e) {
-            console.error("Error parsing settings string:", e);
+            console.error('Error parsing settings string:', e);
             return {
               content: [
                 {
-                  type: "text",
-                  text: `Error updating workflow: settings must be a valid JSON object, not a string. Please remove quotes/backticks around the settings object.`,
+                  type: 'text',
+                  text: 'Error updating workflow: settings must be a valid JSON object, not a string. Please remove quotes/backticks around the settings object.',
                 },
               ],
               isError: true,
@@ -479,67 +473,49 @@ Note: Do not include properties like "callerPolicy" or other non-standard proper
 
         try {
           // First attempt
-          console.log(
-            `Attempting to update workflow ${workflowId} (first attempt)`
-          );
-          const result = await n8nServiceV2.updateWorkflow(
-            workflowId,
-            workflow
-          );
+          console.log(`Attempting to update workflow ${workflowId} (first attempt)`);
+          const result = await n8nServiceV2.updateWorkflow(workflowId, workflow);
 
           return {
             content: [
               {
-                type: "text",
+                type: 'text',
                 text: `Workflow ${workflowId} updated successfully`,
               },
             ],
             data: result,
           };
         } catch (firstError) {
-          console.error(
-            `Error on first attempt updating workflow:`,
-            firstError
-          );
+          console.error('Error on first attempt updating workflow:', firstError);
 
           // If we get an empty response or timeout error, try again after a delay
           if (
             firstError instanceof Error &&
-            (firstError.message.includes("Empty response") ||
-              firstError.message.includes("timeout") ||
-              firstError.message.includes("network"))
+            (firstError.message.includes('Empty response') ||
+              firstError.message.includes('timeout') ||
+              firstError.message.includes('network'))
           ) {
-            console.log(
-              `Retrying workflow update after error: ${firstError.message}`
-            );
+            console.log(`Retrying workflow update after error: ${firstError.message}`);
 
             try {
               // Wait before retrying
               await new Promise((resolve) => setTimeout(resolve, 2000));
 
               // Second attempt
-              console.log(
-                `Attempting to update workflow ${workflowId} (second attempt)`
-              );
-              const result = await n8nServiceV2.updateWorkflow(
-                workflowId,
-                workflow
-              );
+              console.log(`Attempting to update workflow ${workflowId} (second attempt)`);
+              const result = await n8nServiceV2.updateWorkflow(workflowId, workflow);
 
               return {
                 content: [
                   {
-                    type: "text",
+                    type: 'text',
                     text: `Workflow ${workflowId} updated successfully on second attempt`,
                   },
                 ],
                 data: result,
               };
             } catch (secondError) {
-              console.error(
-                `Error on second attempt updating workflow:`,
-                secondError
-              );
+              console.error('Error on second attempt updating workflow:', secondError);
 
               // Try to get the workflow to see if the update actually succeeded
               try {
@@ -552,13 +528,11 @@ Note: Do not include properties like "callerPolicy" or other non-standard proper
 
                 // Compare some key properties to see if the update took effect
                 if (checkResult.name === workflow.name) {
-                  console.log(
-                    `Workflow appears to have been updated successfully despite errors`
-                  );
+                  console.log('Workflow appears to have been updated successfully despite errors');
                   return {
                     content: [
                       {
-                        type: "text",
+                        type: 'text',
                         text: `Workflow ${workflowId} appears to have been updated successfully despite communication errors`,
                       },
                     ],
@@ -566,7 +540,7 @@ Note: Do not include properties like "callerPolicy" or other non-standard proper
                   };
                 }
               } catch (checkError) {
-                console.error(`Error checking workflow status:`, checkError);
+                console.error('Error checking workflow status:', checkError);
               }
 
               // If we get here, both attempts failed and the check didn't confirm success
@@ -578,18 +552,18 @@ Note: Do not include properties like "callerPolicy" or other non-standard proper
           }
         }
       } catch (error) {
-        console.error(`Error updating workflow:`, error);
+        console.error('Error updating workflow:', error);
 
         // Provide a more detailed error message
-        let errorMessage = `Error updating workflow: `;
+        let errorMessage = 'Error updating workflow: ';
 
         if (error instanceof Error) {
           errorMessage += error.message;
-        } else if (typeof error === "object") {
+        } else if (typeof error === 'object') {
           try {
             errorMessage += JSON.stringify(error, null, 2);
-          } catch (e) {
-            errorMessage += "Unserializable error object";
+          } catch (_e) {
+            errorMessage += 'Unserializable error object';
           }
         } else {
           errorMessage += String(error);
@@ -598,7 +572,7 @@ Note: Do not include properties like "callerPolicy" or other non-standard proper
         return {
           content: [
             {
-              type: "text",
+              type: 'text',
               text: errorMessage,
             },
           ],
@@ -610,8 +584,8 @@ Note: Do not include properties like "callerPolicy" or other non-standard proper
 
   // DELETE /workflows/{id} - Delete a workflow
   server.tool(
-    "deleteWorkflow",
-    "Deletes a workflow from n8n. Requires workflowId.",
+    'deleteWorkflow',
+    'Deletes a workflow from n8n. Requires workflowId.',
     workflowIdSchema,
     async (args) => {
       try {
@@ -625,27 +599,21 @@ Note: Do not include properties like "callerPolicy" or other non-standard proper
           return {
             content: [
               {
-                type: "text",
+                type: 'text',
                 text: `Workflow ${workflowId} deleted successfully`,
               },
             ],
             data: result,
           };
         } catch (firstError) {
-          console.error(
-            `Error on first attempt deleting workflow:`,
-            firstError
-          );
+          console.error('Error on first attempt deleting workflow:', firstError);
 
           // If we get a timeout or network error, try again after a delay
           if (
             firstError instanceof Error &&
-            (firstError.message.includes("timeout") ||
-              firstError.message.includes("network"))
+            (firstError.message.includes('timeout') || firstError.message.includes('network'))
           ) {
-            console.log(
-              `Retrying workflow deletion after error: ${firstError.message}`
-            );
+            console.log(`Retrying workflow deletion after error: ${firstError.message}`);
 
             // Wait before retrying
             await new Promise((resolve) => setTimeout(resolve, 2000));
@@ -655,7 +623,7 @@ Note: Do not include properties like "callerPolicy" or other non-standard proper
             return {
               content: [
                 {
-                  type: "text",
+                  type: 'text',
                   text: `Workflow ${workflowId} deleted successfully on second attempt`,
                 },
               ],
@@ -666,7 +634,7 @@ Note: Do not include properties like "callerPolicy" or other non-standard proper
           throw firstError;
         }
       } catch (error) {
-        console.error(`Error deleting workflow:`, error);
+        console.error('Error deleting workflow:', error);
 
         // Use the formatError utility to properly handle ApiError objects
         const errorMessage = formatError(error);
@@ -674,7 +642,7 @@ Note: Do not include properties like "callerPolicy" or other non-standard proper
         return {
           content: [
             {
-              type: "text",
+              type: 'text',
               text: `Error deleting workflow: ${errorMessage}`,
             },
           ],
@@ -686,8 +654,8 @@ Note: Do not include properties like "callerPolicy" or other non-standard proper
 
   // POST /workflows/{id}/activate - Activate a workflow
   server.tool(
-    "activateWorkflow",
-    "Activates a workflow in n8n so it can be triggered. Requires workflowId.",
+    'activateWorkflow',
+    'Activates a workflow in n8n so it can be triggered. Requires workflowId.',
     workflowIdSchema,
     async (args) => {
       try {
@@ -696,14 +664,14 @@ Note: Do not include properties like "callerPolicy" or other non-standard proper
         return {
           content: [
             {
-              type: "text",
+              type: 'text',
               text: `Workflow ${workflowId} activated successfully`,
             },
           ],
           data: result,
         };
       } catch (error) {
-        console.error(`Error activating workflow:`, error);
+        console.error('Error activating workflow:', error);
 
         // Use the formatError utility to properly handle ApiError objects
         const errorMessage = formatError(error);
@@ -711,7 +679,7 @@ Note: Do not include properties like "callerPolicy" or other non-standard proper
         return {
           content: [
             {
-              type: "text",
+              type: 'text',
               text: `Error activating workflow: ${errorMessage}`,
             },
           ],
@@ -723,7 +691,7 @@ Note: Do not include properties like "callerPolicy" or other non-standard proper
 
   // POST /workflows/{id}/deactivate - Deactivate a workflow
   server.tool(
-    "deactivateWorkflow",
+    'deactivateWorkflow',
     "Deactivates a workflow in n8n so it won't be triggered. Requires workflowId.",
     workflowIdSchema,
     async (args) => {
@@ -733,18 +701,18 @@ Note: Do not include properties like "callerPolicy" or other non-standard proper
         return {
           content: [
             {
-              type: "text",
+              type: 'text',
               text: `Workflow ${workflowId} deactivated successfully`,
             },
           ],
           data: result,
         };
       } catch (error) {
-        console.error(`Error deactivating workflow:`, error);
+        console.error('Error deactivating workflow:', error);
         return {
           content: [
             {
-              type: "text",
+              type: 'text',
               text: `Error deactivating workflow: ${
                 error instanceof Error ? error.message : String(error)
               }`,
@@ -758,31 +726,28 @@ Note: Do not include properties like "callerPolicy" or other non-standard proper
 
   // PUT /workflows/{id}/transfer - Transfer a workflow to another project
   server.tool(
-    "transferWorkflow",
-    "Transfers a workflow to another project. Requires workflowId and destinationProjectId.",
+    'transferWorkflow',
+    'Transfers a workflow to another project. Requires workflowId and destinationProjectId.',
     transferWorkflowSchema,
     async (args) => {
       try {
         const { workflowId, destinationProjectId } = args;
-        const result = await n8nServiceV2.transferWorkflow(
-          workflowId,
-          destinationProjectId
-        );
+        const result = await n8nServiceV2.transferWorkflow(workflowId, destinationProjectId);
         return {
           content: [
             {
-              type: "text",
+              type: 'text',
               text: `Workflow ${workflowId} transferred to project ${destinationProjectId} successfully`,
             },
           ],
           data: result,
         };
       } catch (error) {
-        console.error(`Error transferring workflow:`, error);
+        console.error('Error transferring workflow:', error);
         return {
           content: [
             {
-              type: "text",
+              type: 'text',
               text: `Error transferring workflow: ${
                 error instanceof Error ? error.message : String(error)
               }`,
@@ -796,27 +761,24 @@ Note: Do not include properties like "callerPolicy" or other non-standard proper
 
   // PUT /workflows/{id}/tags - Update workflow tags
   server.tool(
-    "updateWorkflowTags",
-    "Updates the tags for a workflow. Requires workflowId and tagIds array.",
+    'updateWorkflowTags',
+    'Updates the tags for a workflow. Requires workflowId and tagIds array.',
     tagIdsSchema,
     async (args) => {
       try {
         const { workflowId, tagIds } = args;
-        const result = await n8nServiceV2.updateWorkflowTags(
-          workflowId,
-          tagIds
-        );
+        const result = await n8nServiceV2.updateWorkflowTags(workflowId, tagIds);
         return {
           content: [
             {
-              type: "text",
+              type: 'text',
               text: `Tags for workflow ${workflowId} updated successfully`,
             },
           ],
           data: result,
         };
       } catch (error) {
-        console.error(`Error updating tags for workflow:`, error);
+        console.error('Error updating tags for workflow:', error);
 
         // Use the formatError utility to properly handle ApiError objects
         const errorMessage = formatError(error);
@@ -824,7 +786,7 @@ Note: Do not include properties like "callerPolicy" or other non-standard proper
         return {
           content: [
             {
-              type: "text",
+              type: 'text',
               text: `Error updating tags for workflow: ${errorMessage}`,
             },
           ],

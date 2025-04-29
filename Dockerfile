@@ -2,17 +2,20 @@ FROM node:20-alpine
 
 WORKDIR /app
 
+# Install pnpm
+RUN npm install -g pnpm
+
 # Copy package.json and package-lock.json
 COPY package*.json ./
 
 # Install dependencies
-RUN npm ci
+RUN pnpm install
 
 # Copy the rest of the application
 COPY . .
 
 # Build the application
-RUN npm run build
+RUN pnpm run build
 
 # Create cache directory for documentation
 RUN mkdir -p /app/cache/docs && chmod -R 777 /app/cache

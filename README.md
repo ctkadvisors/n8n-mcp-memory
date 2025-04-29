@@ -31,7 +31,7 @@ This server implements:
 ### Prerequisites
 
 - Node.js (v20 or later)
-- npm
+- pnpm (v8 or later)
 - n8n instance with API access
 - Docker and Docker Compose (optional, for containerized deployment)
 
@@ -46,14 +46,18 @@ N8N_API_KEY=your-n8n-api-key
 
 1. Clone this repository
 2. Install dependencies:
-   npm install
+   ```bash
+   pnpm install
+   ```
 
 ### Running the Server
 
 #### Local Development
 
-npm run build
-npm run start:server
+```bash
+pnpm run build
+pnpm run start:server
+```
 
 This will start the MCP HTTP Streaming server with n8n integration on port 3000.
 
@@ -208,19 +212,19 @@ To run the tests:
 
 ```bash
 # Run unit tests
-npm test
+pnpm test
 
 # Run with coverage
-npm run test:coverage
+pnpm run test:coverage
 
 # Basic HTTP tests
-npm run test:http
+pnpm run test:http
 
 # Execution tests
-npm run test:execution
+pnpm run test:execution
 
 # Credential tests
-npm run test:credential
+pnpm run test:credential
 ```
 
 ### Code Quality
@@ -229,16 +233,16 @@ We use ESLint and Prettier to maintain code quality:
 
 ```bash
 # Run linting
-npm run lint
+pnpm run lint
 
 # Fix linting issues
-npm run lint:fix
+pnpm run lint:fix
 
 # Check formatting
-npm run format:check
+pnpm run format:check
 
 # Fix formatting
-npm run format
+pnpm run format
 ```
 
 ### Continuous Integration

@@ -1,14 +1,12 @@
-import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-import { z } from "zod";
-import { n8nServiceV2 } from "../../services/n8nServiceV2.js";
+import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
+import { z } from 'zod';
+import { n8nServiceV2 } from '../../services/n8nServiceV2.js';
 
 // Define schemas for audit operations
 const auditSchema = {
   daysAbandonedWorkflow: z.number().optional(),
   categories: z
-    .array(
-      z.enum(["credentials", "database", "nodes", "filesystem", "instance"])
-    )
+    .array(z.enum(['credentials', 'database', 'nodes', 'filesystem', 'instance']))
     .optional(),
 };
 
@@ -19,8 +17,8 @@ const auditSchema = {
 export function registerAuditTools(server: McpServer): void {
   // POST /audit - Generate a security audit
   server.tool(
-    "generateAudit",
-    "Generates a security audit for n8n. Optional parameters: daysAbandonedWorkflow and categories array.",
+    'generateAudit',
+    'Generates a security audit for n8n. Optional parameters: daysAbandonedWorkflow and categories array.',
     auditSchema,
     async (args) => {
       try {
@@ -35,18 +33,18 @@ export function registerAuditTools(server: McpServer): void {
         return {
           content: [
             {
-              type: "text",
-              text: `Security audit generated successfully`,
+              type: 'text',
+              text: 'Security audit generated successfully',
             },
           ],
           data: result,
         };
       } catch (error) {
-        console.error(`Error generating security audit:`, error);
+        console.error('Error generating security audit:', error);
         return {
           content: [
             {
-              type: "text",
+              type: 'text',
               text: `Error generating security audit: ${
                 error instanceof Error ? error.message : String(error)
               }`,

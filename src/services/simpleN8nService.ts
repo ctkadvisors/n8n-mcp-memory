@@ -1,5 +1,5 @@
-import axios from "axios";
-import env from "../utils/env.js";
+import axios from 'axios';
+import env from '../utils/env.js';
 
 // Define interfaces for request/response data
 interface WorkflowData {
@@ -30,8 +30,8 @@ export class SimpleN8nService {
     this.apiUrl = env.N8N_API_URL;
     this.apiKey = env.N8N_API_KEY;
     this.headers = {
-      "X-N8N-API-KEY": this.apiKey,
-      "Content-Type": "application/json",
+      'X-N8N-API-KEY': this.apiKey,
+      'Content-Type': 'application/json',
     };
   }
 
@@ -39,7 +39,7 @@ export class SimpleN8nService {
    * Helper method to handle API requests
    */
   private async request<T>(
-    method: "get" | "post" | "put" | "delete",
+    method: 'get' | 'post' | 'put' | 'delete',
     endpoint: string,
     data?: any,
     params?: Record<string, any>
@@ -74,7 +74,7 @@ export class SimpleN8nService {
     limit?: number;
     cursor?: string;
   }) {
-    return this.request("get", "/workflows", undefined, params);
+    return this.request('get', '/workflows', undefined, params);
   }
 
   /**
@@ -84,7 +84,7 @@ export class SimpleN8nService {
   async getWorkflow(id: string | string[], excludePinnedData?: boolean) {
     // Ensure we're passing a single string ID
     const workflowId = Array.isArray(id) ? id[0] : id;
-    return this.request("get", `/workflows/${workflowId}`, undefined, {
+    return this.request('get', `/workflows/${workflowId}`, undefined, {
       excludePinnedData,
     });
   }
@@ -94,7 +94,7 @@ export class SimpleN8nService {
    * POST /workflows
    */
   async createWorkflow(workflowData: WorkflowData) {
-    return this.request<WorkflowData>("post", "/workflows", workflowData);
+    return this.request<WorkflowData>('post', '/workflows', workflowData);
   }
 
   /**
@@ -102,7 +102,7 @@ export class SimpleN8nService {
    * PUT /workflows/{id}
    */
   async updateWorkflow(id: string, workflowData: WorkflowData) {
-    return this.request<WorkflowData>("put", `/workflows/${id}`, workflowData);
+    return this.request<WorkflowData>('put', `/workflows/${id}`, workflowData);
   }
 
   /**
@@ -110,7 +110,7 @@ export class SimpleN8nService {
    * DELETE /workflows/{id}
    */
   async deleteWorkflow(id: string) {
-    return this.request("delete", `/workflows/${id}`);
+    return this.request('delete', `/workflows/${id}`);
   }
 
   /**
@@ -118,7 +118,7 @@ export class SimpleN8nService {
    * POST /workflows/{id}/activate
    */
   async activateWorkflow(id: string) {
-    return this.request("post", `/workflows/${id}/activate`);
+    return this.request('post', `/workflows/${id}/activate`);
   }
 
   /**
@@ -126,7 +126,7 @@ export class SimpleN8nService {
    * POST /workflows/{id}/deactivate
    */
   async deactivateWorkflow(id: string) {
-    return this.request("post", `/workflows/${id}/deactivate`);
+    return this.request('post', `/workflows/${id}/deactivate`);
   }
 
   /**
@@ -135,7 +135,7 @@ export class SimpleN8nService {
    */
   async transferWorkflow(id: string, destinationProjectId: string) {
     const data: TransferData = { destinationProjectId };
-    return this.request("put", `/workflows/${id}/transfer`, data);
+    return this.request('put', `/workflows/${id}/transfer`, data);
   }
 
   /**
@@ -143,7 +143,7 @@ export class SimpleN8nService {
    * GET /workflows/{id}/tags
    */
   async getWorkflowTags(id: string) {
-    return this.request("get", `/workflows/${id}/tags`);
+    return this.request('get', `/workflows/${id}/tags`);
   }
 
   /**
@@ -151,12 +151,9 @@ export class SimpleN8nService {
    * PUT /workflows/{id}/tags
    */
   async updateWorkflowTags(id: string, tagIds: TagId[]) {
-    console.log(
-      `SimpleN8nService.updateWorkflowTags - Sending tagIds:`,
-      JSON.stringify(tagIds)
-    );
+    console.log('SimpleN8nService.updateWorkflowTags - Sending tagIds:', JSON.stringify(tagIds));
     // The API expects the tagIds array directly
-    return this.request("put", `/workflows/${id}/tags`, tagIds);
+    return this.request('put', `/workflows/${id}/tags`, tagIds);
   }
 
   // ==================== TAG ENDPOINTS ====================
@@ -166,7 +163,7 @@ export class SimpleN8nService {
    * GET /tags
    */
   async getTags(params?: { limit?: number; cursor?: string }) {
-    return this.request("get", "/tags", undefined, params);
+    return this.request('get', '/tags', undefined, params);
   }
 
   /**
@@ -174,7 +171,7 @@ export class SimpleN8nService {
    * GET /tags/{id}
    */
   async getTag(id: string) {
-    return this.request("get", `/tags/${id}`);
+    return this.request('get', `/tags/${id}`);
   }
 
   // ==================== EXECUTION ENDPOINTS ====================
@@ -184,14 +181,14 @@ export class SimpleN8nService {
    * GET /executions
    */
   async getExecutions(params?: {
-    status?: "error" | "success" | "waiting";
+    status?: 'error' | 'success' | 'waiting';
     workflowId?: string;
     projectId?: string;
     includeData?: boolean;
     limit?: number;
     cursor?: string;
   }) {
-    return this.request("get", "/executions", undefined, params);
+    return this.request('get', '/executions', undefined, params);
   }
 
   /**
@@ -199,7 +196,7 @@ export class SimpleN8nService {
    * GET /executions/{id}
    */
   async getExecution(id: string, includeData?: boolean) {
-    return this.request("get", `/executions/${id}`, undefined, { includeData });
+    return this.request('get', `/executions/${id}`, undefined, { includeData });
   }
 }
 

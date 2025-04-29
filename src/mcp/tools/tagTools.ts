@@ -1,6 +1,6 @@
-import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-import { z } from "zod";
-import { n8nServiceV2 } from "../../services/n8nServiceV2.js";
+import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
+import { z } from 'zod';
+import { n8nServiceV2 } from '../../services/n8nServiceV2.js';
 
 // Define schemas for tag-related operations
 const createTagSchema = {
@@ -23,8 +23,8 @@ const tagIdSchema = {
 export function registerTagTools(server: McpServer): void {
   // POST /tags - Create a tag
   server.tool(
-    "createTag",
-    "Creates a new tag in n8n. Requires a name parameter.",
+    'createTag',
+    'Creates a new tag in n8n. Requires a name parameter.',
     createTagSchema,
     async (args) => {
       try {
@@ -33,21 +33,19 @@ export function registerTagTools(server: McpServer): void {
         return {
           content: [
             {
-              type: "text",
+              type: 'text',
               text: `Tag "${name}" created successfully with ID: ${result.id}`,
             },
           ],
           data: result,
         };
       } catch (error) {
-        console.error(`Error creating tag:`, error);
+        console.error('Error creating tag:', error);
         return {
           content: [
             {
-              type: "text",
-              text: `Error creating tag: ${
-                error instanceof Error ? error.message : String(error)
-              }`,
+              type: 'text',
+              text: `Error creating tag: ${error instanceof Error ? error.message : String(error)}`,
             },
           ],
           isError: true,
@@ -58,8 +56,8 @@ export function registerTagTools(server: McpServer): void {
 
   // PUT /tags/{id} - Update a tag
   server.tool(
-    "updateTag",
-    "Updates an existing tag in n8n. Requires tagId and name parameters.",
+    'updateTag',
+    'Updates an existing tag in n8n. Requires tagId and name parameters.',
     updateTagSchema,
     async (args) => {
       try {
@@ -68,21 +66,19 @@ export function registerTagTools(server: McpServer): void {
         return {
           content: [
             {
-              type: "text",
+              type: 'text',
               text: `Tag ${tagId} updated successfully`,
             },
           ],
           data: result,
         };
       } catch (error) {
-        console.error(`Error updating tag:`, error);
+        console.error('Error updating tag:', error);
         return {
           content: [
             {
-              type: "text",
-              text: `Error updating tag: ${
-                error instanceof Error ? error.message : String(error)
-              }`,
+              type: 'text',
+              text: `Error updating tag: ${error instanceof Error ? error.message : String(error)}`,
             },
           ],
           isError: true,
@@ -93,8 +89,8 @@ export function registerTagTools(server: McpServer): void {
 
   // DELETE /tags/{id} - Delete a tag
   server.tool(
-    "deleteTag",
-    "Deletes a tag from n8n. Requires tagId parameter.",
+    'deleteTag',
+    'Deletes a tag from n8n. Requires tagId parameter.',
     tagIdSchema,
     async (args) => {
       try {
@@ -103,21 +99,19 @@ export function registerTagTools(server: McpServer): void {
         return {
           content: [
             {
-              type: "text",
+              type: 'text',
               text: `Tag ${tagId} deleted successfully`,
             },
           ],
           data: result,
         };
       } catch (error) {
-        console.error(`Error deleting tag:`, error);
+        console.error('Error deleting tag:', error);
         return {
           content: [
             {
-              type: "text",
-              text: `Error deleting tag: ${
-                error instanceof Error ? error.message : String(error)
-              }`,
+              type: 'text',
+              text: `Error deleting tag: ${error instanceof Error ? error.message : String(error)}`,
             },
           ],
           isError: true,

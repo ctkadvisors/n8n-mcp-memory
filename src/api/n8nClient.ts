@@ -1,4 +1,4 @@
-import axios, { AxiosInstance, AxiosRequestConfig } from "axios";
+import axios, { AxiosInstance, AxiosRequestConfig } from 'axios';
 import {
   Workflow,
   WorkflowListParams,
@@ -34,7 +34,7 @@ import {
   ImportResult,
   AuditOptions,
   AuditReport,
-} from "../types/n8n.js";
+} from '../types/n8n.js';
 
 /**
  * Client for interacting with the n8n API
@@ -51,8 +51,8 @@ export class N8nClient {
     this.client = axios.create({
       baseURL,
       headers: {
-        "X-N8N-API-KEY": apiKey,
-        "Content-Type": "application/json",
+        'X-N8N-API-KEY': apiKey,
+        'Content-Type': 'application/json',
       },
     });
   }
@@ -81,7 +81,7 @@ export class N8nClient {
       const response = await this.client(config);
 
       // Check if response is empty
-      if (!response.data && config.method?.toUpperCase() !== "DELETE") {
+      if (!response.data && config.method?.toUpperCase() !== 'DELETE') {
         console.warn(
           `N8nClient.request - Empty response received for ${config.method?.toUpperCase()} ${
             config.url
@@ -89,13 +89,11 @@ export class N8nClient {
         );
 
         // For PUT requests (updates), try to get the resource after update
-        if (config.method?.toUpperCase() === "PUT" && config.url) {
-          console.log(
-            `N8nClient.request - Attempting to fetch resource after empty PUT response`
-          );
+        if (config.method?.toUpperCase() === 'PUT' && config.url) {
+          console.log('N8nClient.request - Attempting to fetch resource after empty PUT response');
 
           // Extract ID from URL for GET request
-          const urlParts = config.url.split("/");
+          const urlParts = config.url.split('/');
           const resourceId = urlParts[urlParts.length - 1];
           const resourceType = urlParts[urlParts.length - 2];
 
@@ -105,14 +103,14 @@ export class N8nClient {
 
             // Make a GET request to fetch the updated resource
             const getResponse = await this.client({
-              method: "GET",
+              method: 'GET',
               url: `/${resourceType}/${resourceId}`,
               timeout: config.timeout,
             });
 
             if (getResponse.data) {
               console.log(
-                `N8nClient.request - Successfully retrieved resource after empty PUT response`
+                'N8nClient.request - Successfully retrieved resource after empty PUT response'
               );
               return getResponse.data;
             }
@@ -121,9 +119,7 @@ export class N8nClient {
 
         // If we can't recover, throw a more descriptive error
         throw new Error(
-          `Empty response received from ${config.method?.toUpperCase()} ${
-            config.url
-          }`
+          `Empty response received from ${config.method?.toUpperCase()} ${config.url}`
         );
       }
 
@@ -133,10 +129,7 @@ export class N8nClient {
         console.error(
           `N8nClient.request - API Error: ${error.response.status} - ${error.response.statusText}`
         );
-        console.error(
-          "Response data:",
-          JSON.stringify(error.response.data, null, 2)
-        );
+        console.error('Response data:', JSON.stringify(error.response.data, null, 2));
 
         const apiError: ApiError = {
           status: error.response.status,
@@ -147,11 +140,11 @@ export class N8nClient {
       } else if (axios.isAxiosError(error)) {
         console.error(`N8nClient.request - Network Error: ${error.message}`);
         if (error.request) {
-          console.error("Request details:", error.request);
+          console.error('Request details:', error.request);
         }
         if (error.config) {
           console.error(
-            "Request config:",
+            'Request config:',
             JSON.stringify(
               {
                 url: error.config.url,
@@ -166,7 +159,7 @@ export class N8nClient {
         }
 
         // For timeout errors, provide a more helpful message
-        if (error.code === "ECONNABORTED") {
+        if (error.code === 'ECONNABORTED') {
           throw new Error(
             `Request timeout (${
               config.timeout
@@ -174,7 +167,7 @@ export class N8nClient {
           );
         }
       } else {
-        console.error("N8nClient.request - Unknown error:", error);
+        console.error('N8nClient.request - Unknown error:', error);
       }
       throw error;
     }
@@ -187,12 +180,10 @@ export class N8nClient {
    * @param params Optional parameters for filtering workflows
    * @returns A list of workflows
    */
-  async getWorkflows(
-    params?: WorkflowListParams
-  ): Promise<WorkflowListResponse> {
+  async getWorkflows(params?: WorkflowListParams): Promise<WorkflowListResponse> {
     return this.request<WorkflowListResponse>({
-      method: "GET",
-      url: "/workflows",
+      method: 'GET',
+      url: '/workflows',
       params,
     });
   }
@@ -203,12 +194,9 @@ export class N8nClient {
    * @param excludePinnedData Whether to exclude pinned data
    * @returns The workflow
    */
-  async getWorkflow(
-    id: string,
-    excludePinnedData?: boolean
-  ): Promise<Workflow> {
+  async getWorkflow(id: string, excludePinnedData?: boolean): Promise<Workflow> {
     return this.request<Workflow>({
-      method: "GET",
+      method: 'GET',
       url: `/workflows/${id}`,
       params: { excludePinnedData },
     });
@@ -222,15 +210,13 @@ export class N8nClient {
   async createWorkflow(workflow: Workflow): Promise<Workflow> {
     // Add detailed logging for debugging
     console.log(
-      "N8nClient.createWorkflow - Request payload:",
+      'N8nClient.createWorkflow - Request payload:',
       JSON.stringify(
         {
           name: workflow.name,
           nodesCount: workflow.nodes?.length || 0,
           nodesTypes: workflow.nodes?.map((n) => n.type) || [],
-          connectionsKeys: workflow.connections
-            ? Object.keys(workflow.connections)
-            : [],
+          connectionsKeys: workflow.connections ? Object.keys(workflow.connections) : [],
           settingsKeys: workflow.settings ? Object.keys(workflow.settings) : [],
         },
         null,
@@ -240,13 +226,13 @@ export class N8nClient {
 
     try {
       const result = await this.request<Workflow>({
-        method: "POST",
-        url: "/workflows",
+        method: 'POST',
+        url: '/workflows',
         data: workflow,
       });
 
       console.log(
-        "N8nClient.createWorkflow - Success response:",
+        'N8nClient.createWorkflow - Success response:',
         JSON.stringify(
           {
             id: result.id,
@@ -259,11 +245,11 @@ export class N8nClient {
 
       return result;
     } catch (error) {
-      console.error("N8nClient.createWorkflow - Error details:", error);
+      console.error('N8nClient.createWorkflow - Error details:', error);
 
       // Log more details if it's an API error
-      if (typeof error === "object" && error !== null && "error" in error) {
-        console.error("API Error details:", JSON.stringify(error, null, 2));
+      if (typeof error === 'object' && error !== null && 'error' in error) {
+        console.error('API Error details:', JSON.stringify(error, null, 2));
       }
 
       throw error;
@@ -279,16 +265,14 @@ export class N8nClient {
   async updateWorkflow(id: string, workflow: Workflow): Promise<Workflow> {
     // Add detailed logging for debugging
     console.log(
-      "N8nClient.updateWorkflow - Request payload:",
+      'N8nClient.updateWorkflow - Request payload:',
       JSON.stringify(
         {
           id,
           name: workflow.name,
           nodesCount: workflow.nodes?.length || 0,
           nodesTypes: workflow.nodes?.map((n) => n.type) || [],
-          connectionsKeys: workflow.connections
-            ? Object.keys(workflow.connections)
-            : [],
+          connectionsKeys: workflow.connections ? Object.keys(workflow.connections) : [],
           settingsKeys: workflow.settings ? Object.keys(workflow.settings) : [],
         },
         null,
@@ -301,7 +285,7 @@ export class N8nClient {
       await new Promise((resolve) => setTimeout(resolve, 500));
 
       const result = await this.request<Workflow>({
-        method: "PUT",
+        method: 'PUT',
         url: `/workflows/${id}`,
         data: workflow,
         // Add a longer timeout for update operations
@@ -309,7 +293,7 @@ export class N8nClient {
       });
 
       console.log(
-        "N8nClient.updateWorkflow - Success response:",
+        'N8nClient.updateWorkflow - Success response:',
         JSON.stringify(
           {
             id: result.id,
@@ -322,24 +306,22 @@ export class N8nClient {
 
       return result;
     } catch (error) {
-      console.error("N8nClient.updateWorkflow - Error details:", error);
+      console.error('N8nClient.updateWorkflow - Error details:', error);
 
       // Log more details if it's an API error
-      if (typeof error === "object" && error !== null && "error" in error) {
-        console.error("API Error details:", JSON.stringify(error, null, 2));
+      if (typeof error === 'object' && error !== null && 'error' in error) {
+        console.error('API Error details:', JSON.stringify(error, null, 2));
       }
 
       // If we get an empty response error, try again with a longer delay
-      if (error instanceof Error && error.message.includes("Empty response")) {
-        console.log(
-          "N8nClient.updateWorkflow - Retrying after empty response error"
-        );
+      if (error instanceof Error && error.message.includes('Empty response')) {
+        console.log('N8nClient.updateWorkflow - Retrying after empty response error');
 
         // Wait a bit longer before retrying
         await new Promise((resolve) => setTimeout(resolve, 1500));
 
         return this.request<Workflow>({
-          method: "PUT",
+          method: 'PUT',
           url: `/workflows/${id}`,
           data: workflow,
           // Add an even longer timeout for the retry
@@ -358,7 +340,7 @@ export class N8nClient {
    */
   async deleteWorkflow(id: string): Promise<Workflow> {
     return this.request<Workflow>({
-      method: "DELETE",
+      method: 'DELETE',
       url: `/workflows/${id}`,
     });
   }
@@ -370,7 +352,7 @@ export class N8nClient {
    */
   async activateWorkflow(id: string): Promise<Workflow> {
     return this.request<Workflow>({
-      method: "POST",
+      method: 'POST',
       url: `/workflows/${id}/activate`,
     });
   }
@@ -382,7 +364,7 @@ export class N8nClient {
    */
   async deactivateWorkflow(id: string): Promise<Workflow> {
     return this.request<Workflow>({
-      method: "POST",
+      method: 'POST',
       url: `/workflows/${id}/deactivate`,
     });
   }
@@ -393,12 +375,9 @@ export class N8nClient {
    * @param params The transfer parameters
    * @returns The transfer result
    */
-  async transferWorkflow(
-    id: string,
-    params: WorkflowTransferParams
-  ): Promise<any> {
+  async transferWorkflow(id: string, params: WorkflowTransferParams): Promise<any> {
     return this.request<any>({
-      method: "PUT",
+      method: 'PUT',
       url: `/workflows/${id}/transfer`,
       data: params,
     });
@@ -411,7 +390,7 @@ export class N8nClient {
    */
   async getWorkflowTags(id: string): Promise<Tag[]> {
     return this.request<Tag[]>({
-      method: "GET",
+      method: 'GET',
       url: `/workflows/${id}/tags`,
     });
   }
@@ -422,31 +401,25 @@ export class N8nClient {
    * @param tagIds The tag IDs array
    * @returns The updated workflow tags
    */
-  async updateWorkflowTags(
-    id: string,
-    tagIds: { id: string }[]
-  ): Promise<Tag[]> {
+  async updateWorkflowTags(id: string, tagIds: { id: string }[]): Promise<Tag[]> {
     // Add detailed logging for debugging
-    console.log(
-      "N8nClient.updateWorkflowTags - Request payload:",
-      JSON.stringify(tagIds, null, 2)
-    );
+    console.log('N8nClient.updateWorkflowTags - Request payload:', JSON.stringify(tagIds, null, 2));
 
     try {
       const result = await this.request<Tag[]>({
-        method: "PUT",
+        method: 'PUT',
         url: `/workflows/${id}/tags`,
         data: tagIds, // Send the array directly
       });
 
       console.log(
-        "N8nClient.updateWorkflowTags - Success response:",
+        'N8nClient.updateWorkflowTags - Success response:',
         JSON.stringify(result, null, 2)
       );
 
       return result;
     } catch (error) {
-      console.error("N8nClient.updateWorkflowTags - Error details:", error);
+      console.error('N8nClient.updateWorkflowTags - Error details:', error);
       throw error;
     }
   }
@@ -460,8 +433,8 @@ export class N8nClient {
    */
   async createCredential(credential: Credential): Promise<CredentialResponse> {
     return this.request<CredentialResponse>({
-      method: "POST",
-      url: "/credentials",
+      method: 'POST',
+      url: '/credentials',
       data: credential,
     });
   }
@@ -473,7 +446,7 @@ export class N8nClient {
    */
   async deleteCredential(id: string): Promise<CredentialResponse> {
     return this.request<CredentialResponse>({
-      method: "DELETE",
+      method: 'DELETE',
       url: `/credentials/${id}`,
     });
   }
@@ -483,11 +456,9 @@ export class N8nClient {
    * @param credentialTypeName The credential type name
    * @returns The credential schema
    */
-  async getCredentialSchema(
-    credentialTypeName: string
-  ): Promise<CredentialSchema> {
+  async getCredentialSchema(credentialTypeName: string): Promise<CredentialSchema> {
     return this.request<CredentialSchema>({
-      method: "GET",
+      method: 'GET',
       url: `/credentials/schema/${credentialTypeName}`,
     });
   }
@@ -498,12 +469,9 @@ export class N8nClient {
    * @param params The transfer parameters
    * @returns Success status
    */
-  async transferCredential(
-    id: string,
-    params: CredentialTransferParams
-  ): Promise<void> {
+  async transferCredential(id: string, params: CredentialTransferParams): Promise<void> {
     return this.request<void>({
-      method: "PUT",
+      method: 'PUT',
       url: `/credentials/${id}/transfer`,
       data: params,
     });
@@ -516,12 +484,10 @@ export class N8nClient {
    * @param params Optional parameters for filtering executions
    * @returns A list of executions
    */
-  async getExecutions(
-    params?: ExecutionListParams
-  ): Promise<ExecutionListResponse> {
+  async getExecutions(params?: ExecutionListParams): Promise<ExecutionListResponse> {
     return this.request<ExecutionListResponse>({
-      method: "GET",
-      url: "/executions",
+      method: 'GET',
+      url: '/executions',
       params,
     });
   }
@@ -534,7 +500,7 @@ export class N8nClient {
    */
   async getExecution(id: number, includeData?: boolean): Promise<Execution> {
     return this.request<Execution>({
-      method: "GET",
+      method: 'GET',
       url: `/executions/${id}`,
       params: { includeData },
     });
@@ -547,7 +513,7 @@ export class N8nClient {
    */
   async deleteExecution(id: number): Promise<Execution> {
     return this.request<Execution>({
-      method: "DELETE",
+      method: 'DELETE',
       url: `/executions/${id}`,
     });
   }
@@ -558,12 +524,9 @@ export class N8nClient {
    * @param params Optional parameters for the execution
    * @returns The execution result
    */
-  async executeWorkflow(
-    id: string,
-    params?: WorkflowExecuteParams
-  ): Promise<Execution> {
+  async executeWorkflow(id: string, params?: WorkflowExecuteParams): Promise<Execution> {
     return this.request<Execution>({
-      method: "POST",
+      method: 'POST',
       url: `/workflows/${id}/execute`,
       data: params,
     });
@@ -578,8 +541,8 @@ export class N8nClient {
    */
   async getUsers(params?: UserListParams): Promise<UserListResponse> {
     return this.request<UserListResponse>({
-      method: "GET",
-      url: "/users",
+      method: 'GET',
+      url: '/users',
       params,
     });
   }
@@ -592,7 +555,7 @@ export class N8nClient {
    */
   async getUser(idOrEmail: string, includeRole?: boolean): Promise<User> {
     return this.request<User>({
-      method: "GET",
+      method: 'GET',
       url: `/users/${idOrEmail}`,
       params: { includeRole },
     });
@@ -605,8 +568,8 @@ export class N8nClient {
    */
   async createUsers(users: CreateUserParams[]): Promise<CreateUserResponse[]> {
     return this.request<CreateUserResponse[]>({
-      method: "POST",
-      url: "/users",
+      method: 'POST',
+      url: '/users',
       data: users,
     });
   }
@@ -618,7 +581,7 @@ export class N8nClient {
    */
   async deleteUser(idOrEmail: string): Promise<void> {
     return this.request<void>({
-      method: "DELETE",
+      method: 'DELETE',
       url: `/users/${idOrEmail}`,
     });
   }
@@ -629,12 +592,9 @@ export class N8nClient {
    * @param params The role change parameters
    * @returns Success status
    */
-  async changeUserRole(
-    idOrEmail: string,
-    params: ChangeRoleParams
-  ): Promise<void> {
+  async changeUserRole(idOrEmail: string, params: ChangeRoleParams): Promise<void> {
     return this.request<void>({
-      method: "PATCH",
+      method: 'PATCH',
       url: `/users/${idOrEmail}/role`,
       data: params,
     });
@@ -650,8 +610,8 @@ export class N8nClient {
    */
   async getTags(limit?: number, cursor?: string): Promise<TagListResponse> {
     return this.request<TagListResponse>({
-      method: "GET",
-      url: "/tags",
+      method: 'GET',
+      url: '/tags',
       params: { limit, cursor },
     });
   }
@@ -663,7 +623,7 @@ export class N8nClient {
    */
   async getTag(id: string): Promise<TagResponse> {
     return this.request<TagResponse>({
-      method: "GET",
+      method: 'GET',
       url: `/tags/${id}`,
     });
   }
@@ -675,8 +635,8 @@ export class N8nClient {
    */
   async createTag(tag: Tag): Promise<TagResponse> {
     return this.request<TagResponse>({
-      method: "POST",
-      url: "/tags",
+      method: 'POST',
+      url: '/tags',
       data: tag,
     });
   }
@@ -689,7 +649,7 @@ export class N8nClient {
    */
   async updateTag(id: string, tag: Tag): Promise<TagResponse> {
     return this.request<TagResponse>({
-      method: "PUT",
+      method: 'PUT',
       url: `/tags/${id}`,
       data: tag,
     });
@@ -702,7 +662,7 @@ export class N8nClient {
    */
   async deleteTag(id: string): Promise<TagResponse> {
     return this.request<TagResponse>({
-      method: "DELETE",
+      method: 'DELETE',
       url: `/tags/${id}`,
     });
   }
@@ -716,8 +676,8 @@ export class N8nClient {
    */
   async getProjects(params?: ProjectListParams): Promise<ProjectListResponse> {
     return this.request<ProjectListResponse>({
-      method: "GET",
-      url: "/projects",
+      method: 'GET',
+      url: '/projects',
       params,
     });
   }
@@ -729,8 +689,8 @@ export class N8nClient {
    */
   async createProject(project: Project): Promise<ProjectResponse> {
     return this.request<ProjectResponse>({
-      method: "POST",
-      url: "/projects",
+      method: 'POST',
+      url: '/projects',
       data: project,
     });
   }
@@ -743,7 +703,7 @@ export class N8nClient {
    */
   async updateProject(id: string, project: Project): Promise<void> {
     return this.request<void>({
-      method: "PUT",
+      method: 'PUT',
       url: `/projects/${id}`,
       data: project,
     });
@@ -756,7 +716,7 @@ export class N8nClient {
    */
   async deleteProject(id: string): Promise<void> {
     return this.request<void>({
-      method: "DELETE",
+      method: 'DELETE',
       url: `/projects/${id}`,
     });
   }
@@ -768,12 +728,10 @@ export class N8nClient {
    * @param params Optional parameters for filtering variables
    * @returns A list of variables
    */
-  async getVariables(
-    params?: VariableListParams
-  ): Promise<VariableListResponse> {
+  async getVariables(params?: VariableListParams): Promise<VariableListResponse> {
     return this.request<VariableListResponse>({
-      method: "GET",
-      url: "/variables",
+      method: 'GET',
+      url: '/variables',
       params,
     });
   }
@@ -785,8 +743,8 @@ export class N8nClient {
    */
   async createVariable(variable: Variable): Promise<void> {
     return this.request<void>({
-      method: "POST",
-      url: "/variables",
+      method: 'POST',
+      url: '/variables',
       data: variable,
     });
   }
@@ -798,7 +756,7 @@ export class N8nClient {
    */
   async deleteVariable(id: string): Promise<void> {
     return this.request<void>({
-      method: "DELETE",
+      method: 'DELETE',
       url: `/variables/${id}`,
     });
   }
@@ -812,8 +770,8 @@ export class N8nClient {
    */
   async pullFromSourceControl(options: PullOptions): Promise<ImportResult> {
     return this.request<ImportResult>({
-      method: "POST",
-      url: "/source-control/pull",
+      method: 'POST',
+      url: '/source-control/pull',
       data: options,
     });
   }
@@ -827,8 +785,8 @@ export class N8nClient {
    */
   async generateAudit(options?: AuditOptions): Promise<AuditReport> {
     return this.request<AuditReport>({
-      method: "POST",
-      url: "/audit",
+      method: 'POST',
+      url: '/audit',
       data: options,
     });
   }

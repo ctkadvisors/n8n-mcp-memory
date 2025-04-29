@@ -1,14 +1,11 @@
-import express from "express";
-import { randomUUID } from "node:crypto";
-import {
-  McpServer,
-  ResourceTemplate,
-} from "@modelcontextprotocol/sdk/server/mcp.js";
-import { StreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/streamableHttp.js";
-import { isInitializeRequest } from "@modelcontextprotocol/sdk/types.js";
-import { z } from "zod";
-import { simpleN8nService } from "./services/simpleN8nService.js";
-import env from "./utils/env.js";
+import express from 'express';
+import { randomUUID } from 'node:crypto';
+import { McpServer, ResourceTemplate } from '@modelcontextprotocol/sdk/server/mcp.js';
+import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/streamableHttp.js';
+import { isInitializeRequest } from '@modelcontextprotocol/sdk/types.js';
+import { z } from 'zod';
+import { simpleN8nService } from './services/simpleN8nService.js';
+import env from './utils/env.js';
 
 // Define schemas for workflow-related operations
 const workflowSchema = {
@@ -22,7 +19,7 @@ const workflowIdSchema = {
   workflowId: z.string(),
 };
 
-const tagIdsSchema = {
+const _tagIdsSchema = {
   tagIds: z.array(
     z.object({
       id: z.string(),
@@ -45,21 +42,21 @@ const transports: { [sessionId: string]: StreamableHTTPServerTransport } = {};
 // Create a new MCP server instance
 const createServer = () => {
   const server = new McpServer({
-    name: "MCP HTTP Streaming Example with n8n Integration",
-    version: "1.0.0",
+    name: 'MCP HTTP Streaming Example with n8n Integration',
+    version: '1.0.0',
   });
 
   // Add a simple echo tool
-  server.tool("echo", { message: z.string() }, async ({ message }) => ({
-    content: [{ type: "text", text: `Echo: ${message}` }],
+  server.tool('echo', { message: z.string() }, async ({ message }) => ({
+    content: [{ type: 'text', text: `Echo: ${message}` }],
   }));
 
   // Add a simple greeting resource
-  server.resource("greeting", "greeting://hello", async (uri) => ({
+  server.resource('greeting', 'greeting://hello', async (uri) => ({
     contents: [
       {
         uri: uri.href,
-        text: "Hello from MCP HTTP Streaming Server!",
+        text: 'Hello from MCP HTTP Streaming Server!',
       },
     ],
   }));
@@ -67,7 +64,7 @@ const createServer = () => {
   // ==================== WORKFLOW RESOURCES ====================
 
   // GET /workflows - List all workflows
-  server.resource("n8nWorkflows", "n8n://workflows", async (uri) => {
+  server.resource('n8nWorkflows', 'n8n://workflows', async (uri) => {
     try {
       const workflows = await simpleN8nService.getWorkflows();
       return {
@@ -79,7 +76,7 @@ const createServer = () => {
         ],
       };
     } catch (error) {
-      console.error("Error fetching n8n workflows:", error);
+      console.error('Error fetching n8n workflows:', error);
       return {
         contents: [
           {
@@ -96,8 +93,8 @@ const createServer = () => {
 
   // GET /workflows/{id} - Get a workflow by ID
   server.resource(
-    "n8nWorkflow",
-    new ResourceTemplate("n8n://workflows/{workflowId}", { list: undefined }),
+    'n8nWorkflow',
+    new ResourceTemplate('n8n://workflows/{workflowId}', { list: undefined }),
     async (uri, { workflowId }) => {
       try {
         const workflow = await simpleN8nService.getWorkflow(workflowId);
@@ -128,8 +125,8 @@ const createServer = () => {
 
   // GET /workflows/{id}/tags - Get workflow tags
   server.resource(
-    "n8nWorkflowTags",
-    new ResourceTemplate("n8n://workflows/{workflowId}/tags", {
+    'n8nWorkflowTags',
+    new ResourceTemplate('n8n://workflows/{workflowId}/tags', {
       list: undefined,
     }),
     async (uri, { workflowId }) => {
@@ -163,7 +160,7 @@ const createServer = () => {
   // ==================== TAG RESOURCES ====================
 
   // GET /tags - List all tags
-  server.resource("n8nTags", "n8n://tags", async (uri) => {
+  server.resource('n8nTags', 'n8n://tags', async (uri) => {
     try {
       const tags = await simpleN8nService.getTags();
       return {
@@ -175,7 +172,7 @@ const createServer = () => {
         ],
       };
     } catch (error) {
-      console.error("Error fetching n8n tags:", error);
+      console.error('Error fetching n8n tags:', error);
       return {
         contents: [
           {
@@ -193,24 +190,24 @@ const createServer = () => {
   // ==================== WORKFLOW TOOLS ====================
 
   // POST /workflows - Create a workflow
-  server.tool("createWorkflow", workflowSchema, async (args) => {
+  server.tool('createWorkflow', workflowSchema, async (args) => {
     try {
       const result = await simpleN8nService.createWorkflow(args);
       return {
         content: [
           {
-            type: "text",
+            type: 'text',
             text: `Workflow created successfully: ${result.id}`,
           },
         ],
         data: result,
       };
     } catch (error) {
-      console.error("Error creating workflow:", error);
+      console.error('Error creating workflow:', error);
       return {
         content: [
           {
-            type: "text",
+            type: 'text',
             text: `Error creating workflow: ${
               error instanceof Error ? error.message : String(error)
             }`,
@@ -223,7 +220,7 @@ const createServer = () => {
 
   // PUT /workflows/{id} - Update a workflow
   server.tool(
-    "updateWorkflow",
+    'updateWorkflow',
     {
       workflowId: z.string(),
       workflowData: z.object(workflowSchema).passthrough(),
@@ -231,25 +228,22 @@ const createServer = () => {
     async (args) => {
       try {
         const { workflowId, workflowData } = args;
-        const result = await simpleN8nService.updateWorkflow(
-          workflowId,
-          workflowData
-        );
+        const result = await simpleN8nService.updateWorkflow(workflowId, workflowData);
         return {
           content: [
             {
-              type: "text",
+              type: 'text',
               text: `Workflow ${workflowId} updated successfully`,
             },
           ],
           data: result,
         };
       } catch (error) {
-        console.error(`Error updating workflow:`, error);
+        console.error('Error updating workflow:', error);
         return {
           content: [
             {
-              type: "text",
+              type: 'text',
               text: `Error updating workflow: ${
                 error instanceof Error ? error.message : String(error)
               }`,
@@ -262,13 +256,13 @@ const createServer = () => {
   );
 
   // DELETE /workflows/{id} - Delete a workflow
-  server.tool("deleteWorkflow", workflowIdSchema, async ({ workflowId }) => {
+  server.tool('deleteWorkflow', workflowIdSchema, async ({ workflowId }) => {
     try {
       const result = await simpleN8nService.deleteWorkflow(workflowId);
       return {
         content: [
           {
-            type: "text",
+            type: 'text',
             text: `Workflow ${workflowId} deleted successfully`,
           },
         ],
@@ -279,7 +273,7 @@ const createServer = () => {
       return {
         content: [
           {
-            type: "text",
+            type: 'text',
             text: `Error deleting workflow ${workflowId}: ${
               error instanceof Error ? error.message : String(error)
             }`,
@@ -291,13 +285,13 @@ const createServer = () => {
   });
 
   // POST /workflows/{id}/activate - Activate a workflow
-  server.tool("activateWorkflow", workflowIdSchema, async ({ workflowId }) => {
+  server.tool('activateWorkflow', workflowIdSchema, async ({ workflowId }) => {
     try {
       const result = await simpleN8nService.activateWorkflow(workflowId);
       return {
         content: [
           {
-            type: "text",
+            type: 'text',
             text: `Workflow ${workflowId} activated successfully`,
           },
         ],
@@ -308,7 +302,7 @@ const createServer = () => {
       return {
         content: [
           {
-            type: "text",
+            type: 'text',
             text: `Error activating workflow ${workflowId}: ${
               error instanceof Error ? error.message : String(error)
             }`,
@@ -320,52 +314,45 @@ const createServer = () => {
   });
 
   // POST /workflows/{id}/deactivate - Deactivate a workflow
-  server.tool(
-    "deactivateWorkflow",
-    workflowIdSchema,
-    async ({ workflowId }) => {
-      try {
-        const result = await simpleN8nService.deactivateWorkflow(workflowId);
-        return {
-          content: [
-            {
-              type: "text",
-              text: `Workflow ${workflowId} deactivated successfully`,
-            },
-          ],
-          data: result,
-        };
-      } catch (error) {
-        console.error(`Error deactivating workflow ${workflowId}:`, error);
-        return {
-          content: [
-            {
-              type: "text",
-              text: `Error deactivating workflow ${workflowId}: ${
-                error instanceof Error ? error.message : String(error)
-              }`,
-            },
-          ],
-          isError: true,
-        };
-      }
+  server.tool('deactivateWorkflow', workflowIdSchema, async ({ workflowId }) => {
+    try {
+      const result = await simpleN8nService.deactivateWorkflow(workflowId);
+      return {
+        content: [
+          {
+            type: 'text',
+            text: `Workflow ${workflowId} deactivated successfully`,
+          },
+        ],
+        data: result,
+      };
+    } catch (error) {
+      console.error(`Error deactivating workflow ${workflowId}:`, error);
+      return {
+        content: [
+          {
+            type: 'text',
+            text: `Error deactivating workflow ${workflowId}: ${
+              error instanceof Error ? error.message : String(error)
+            }`,
+          },
+        ],
+        isError: true,
+      };
     }
-  );
+  });
 
   // PUT /workflows/{id}/transfer - Transfer a workflow to another project
   server.tool(
-    "transferWorkflow",
+    'transferWorkflow',
     transferWorkflowSchema,
     async ({ workflowId, destinationProjectId }) => {
       try {
-        const result = await simpleN8nService.transferWorkflow(
-          workflowId,
-          destinationProjectId
-        );
+        const result = await simpleN8nService.transferWorkflow(workflowId, destinationProjectId);
         return {
           content: [
             {
-              type: "text",
+              type: 'text',
               text: `Workflow ${workflowId} transferred to project ${destinationProjectId} successfully`,
             },
           ],
@@ -376,7 +363,7 @@ const createServer = () => {
         return {
           content: [
             {
-              type: "text",
+              type: 'text',
               text: `Error transferring workflow ${workflowId}: ${
                 error instanceof Error ? error.message : String(error)
               }`,
@@ -390,21 +377,18 @@ const createServer = () => {
 
   // PUT /workflows/{id}/tags - Update workflow tags
   server.tool(
-    "updateWorkflowTags",
+    'updateWorkflowTags',
     z.object({
       workflowId: z.string(),
       tagIds: z.array(z.object({ id: z.string() })),
     }),
     async ({ workflowId, tagIds }) => {
       try {
-        const result = await simpleN8nService.updateWorkflowTags(
-          workflowId,
-          tagIds
-        );
+        const result = await simpleN8nService.updateWorkflowTags(workflowId, tagIds);
         return {
           content: [
             {
-              type: "text",
+              type: 'text',
               text: `Tags for workflow ${workflowId} updated successfully`,
             },
           ],
@@ -415,7 +399,7 @@ const createServer = () => {
         return {
           content: [
             {
-              type: "text",
+              type: 'text',
               text: `Error updating tags for workflow ${workflowId}: ${
                 error instanceof Error ? error.message : String(error)
               }`,
@@ -431,9 +415,9 @@ const createServer = () => {
 };
 
 // Handle POST requests for client-to-server communication
-app.post("/mcp", async (req, res) => {
+app.post('/mcp', async (req, res) => {
   // Check for existing session ID
-  const sessionId = req.headers["mcp-session-id"] as string | undefined;
+  const sessionId = req.headers['mcp-session-id'] as string | undefined;
   let transport: StreamableHTTPServerTransport;
 
   if (sessionId && transports[sessionId]) {
@@ -461,14 +445,14 @@ app.post("/mcp", async (req, res) => {
     const server = createServer();
     await server.connect(transport);
 
-    console.log("New MCP server created and connected");
+    console.log('New MCP server created and connected');
   } else {
     // Invalid request
     res.status(400).json({
-      jsonrpc: "2.0",
+      jsonrpc: '2.0',
       error: {
         code: -32000,
-        message: "Bad Request: No valid session ID provided",
+        message: 'Bad Request: No valid session ID provided',
       },
       id: null,
     });
@@ -480,13 +464,10 @@ app.post("/mcp", async (req, res) => {
 });
 
 // Reusable handler for GET and DELETE requests
-const handleSessionRequest = async (
-  req: express.Request,
-  res: express.Response
-) => {
-  const sessionId = req.headers["mcp-session-id"] as string | undefined;
+const handleSessionRequest = async (req: express.Request, res: express.Response) => {
+  const sessionId = req.headers['mcp-session-id'] as string | undefined;
   if (!sessionId || !transports[sessionId]) {
-    res.status(400).send("Invalid or missing session ID");
+    res.status(400).send('Invalid or missing session ID');
     return;
   }
 
@@ -495,13 +476,13 @@ const handleSessionRequest = async (
 };
 
 // Handle GET requests for server-to-client notifications via SSE
-app.get("/mcp", handleSessionRequest);
+app.get('/mcp', handleSessionRequest);
 
 // Handle DELETE requests for session termination
-app.delete("/mcp", handleSessionRequest);
+app.delete('/mcp', handleSessionRequest);
 
 // Add a simple HTML page for testing
-app.get("/", (req, res) => {
+app.get('/', (req, res) => {
   res.send(`
     <!DOCTYPE html>
     <html>
@@ -616,9 +597,7 @@ app.get("/", (req, res) => {
 // Start the server
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.log(
-    `MCP HTTP Streaming Server with n8n Integration listening on port ${PORT}`
-  );
+  console.log(`MCP HTTP Streaming Server with n8n Integration listening on port ${PORT}`);
   console.log(`Visit http://localhost:${PORT} for more information`);
   console.log(`Using n8n API URL: ${env.N8N_API_URL}`);
 });

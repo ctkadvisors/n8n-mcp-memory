@@ -47,15 +47,16 @@ If you have a feature request, please create an issue with the following informa
 1. Clone the repository
 2. Install dependencies:
    ```bash
-   npm install
+   pnpm install
    ```
+   This will also set up Git hooks via simple-git-hooks
 3. Build the project:
    ```bash
-   npm run build
+   pnpm run build
    ```
 4. Run the tests:
    ```bash
-   npm test
+   pnpm test
    ```
 
 ## Testing
@@ -63,7 +64,17 @@ If you have a feature request, please create an issue with the following informa
 Please ensure all tests pass before submitting a pull request:
 
 ```bash
-npm test
+pnpm test
+```
+
+Also make sure your code follows our style guidelines:
+
+```bash
+# Check code style
+pnpm run lint
+
+# Check formatting
+pnpm run format:check
 ```
 
 ## License

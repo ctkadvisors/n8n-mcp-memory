@@ -6,10 +6,10 @@
  * and prepares it for indexing and storage.
  */
 
-import axios from "axios";
-import * as cheerio from "cheerio";
-import { promises as fs } from "fs";
-import path from "path";
+import axios from 'axios';
+import * as cheerio from 'cheerio';
+import { promises as fs } from 'fs';
+import path from 'path';
 
 // Types for documentation data
 export interface NodeDocumentation {
@@ -54,9 +54,9 @@ export class DocFetcher {
    * @param nodeListUrl - URL to fetch the list of available nodes
    */
   constructor(
-    baseUrl = "https://docs.n8n.io/integrations/builtin/",
-    cacheDir = path.join(process.cwd(), "cache", "docs"),
-    nodeListUrl = "https://docs.n8n.io/integrations/builtin/node-types/"
+    baseUrl = 'https://docs.n8n.io/integrations/builtin/',
+    cacheDir = path.join(process.cwd(), 'cache', 'docs'),
+    nodeListUrl = 'https://docs.n8n.io/integrations/builtin/node-types/'
   ) {
     this.baseUrl = baseUrl;
     this.cacheDir = cacheDir;
@@ -78,7 +78,7 @@ export class DocFetcher {
    */
   async fetchAllNodes(): Promise<NodeDocumentation[]> {
     try {
-      console.log("Fetching documentation for all nodes...");
+      console.log('Fetching documentation for all nodes...');
 
       // Fetch the list of nodes from the n8n documentation site
       const response = await axios.get(this.nodeListUrl);
@@ -90,15 +90,15 @@ export class DocFetcher {
 
       // Look for links to node documentation pages
       $('a[href*="/integrations/builtin/"]').each((_, element) => {
-        const href = $(element).attr("href");
+        const href = $(element).attr('href');
         if (
           href &&
           !nodeLinks.includes(href) &&
-          (href.includes("/core-nodes/n8n-nodes-base.") ||
-            href.includes("/app-nodes/n8n-nodes-base.") ||
-            href.includes("/trigger-nodes/n8n-nodes-base.") ||
-            href.includes("/cluster-nodes/root-nodes/n8n-nodes-langchain.") ||
-            href.includes("/cluster-nodes/sub-nodes/n8n-nodes-langchain."))
+          (href.includes('/core-nodes/n8n-nodes-base.') ||
+            href.includes('/app-nodes/n8n-nodes-base.') ||
+            href.includes('/trigger-nodes/n8n-nodes-base.') ||
+            href.includes('/cluster-nodes/root-nodes/n8n-nodes-langchain.') ||
+            href.includes('/cluster-nodes/sub-nodes/n8n-nodes-langchain.'))
         ) {
           nodeLinks.push(href);
         }
@@ -106,27 +106,27 @@ export class DocFetcher {
 
       // Add additional links for LangChain nodes that might not be in the main navigation
       const langchainRootNodes = [
-        "agent",
-        "chainllm",
-        "chainretrievalqa",
-        "chainsummarization",
-        "information-extractor",
-        "text-classifier",
-        "sentimentanalysis",
-        "code",
-        "vectorstoreinmemory",
-        "vectorstoremilvus",
-        "vectorstoremongodbatlas",
-        "vectorstorepgvector",
-        "vectorstorepinecone",
-        "vectorstoreqdrant",
-        "vectorstoresupabase",
-        "vectorstorezep",
-        "lmchatopenai",
-        "lmchatollama",
-        "embeddingsopenai",
-        "chattrigger",
-        "mcptrigger",
+        'agent',
+        'chainllm',
+        'chainretrievalqa',
+        'chainsummarization',
+        'information-extractor',
+        'text-classifier',
+        'sentimentanalysis',
+        'code',
+        'vectorstoreinmemory',
+        'vectorstoremilvus',
+        'vectorstoremongodbatlas',
+        'vectorstorepgvector',
+        'vectorstorepinecone',
+        'vectorstoreqdrant',
+        'vectorstoresupabase',
+        'vectorstorezep',
+        'lmchatopenai',
+        'lmchatollama',
+        'embeddingsopenai',
+        'chattrigger',
+        'mcptrigger',
       ];
 
       for (const nodeName of langchainRootNodes) {
@@ -144,10 +144,8 @@ export class DocFetcher {
 
       for (const link of nodeLinks) {
         // Extract node type from the URL
-        const baseNodeTypeMatch = link.match(/n8n-nodes-base\.([^\/]+)/);
-        const langchainNodeTypeMatch = link.match(
-          /n8n-nodes-langchain\.([^\/]+)/
-        );
+        const baseNodeTypeMatch = link.match(/n8n-nodes-base\.([^/]+)/);
+        const langchainNodeTypeMatch = link.match(/n8n-nodes-langchain\.([^/]+)/);
 
         let nodeType: string | null = null;
         let nodeName: string | null = null;
@@ -170,9 +168,7 @@ export class DocFetcher {
             }
 
             // Fetch documentation if not in cache
-            const fullUrl = link.startsWith("http")
-              ? link
-              : `https://docs.n8n.io${link}`;
+            const fullUrl = link.startsWith('http') ? link : `https://docs.n8n.io${link}`;
             const nodeResponse = await axios.get(fullUrl);
             const nodeHtml = nodeResponse.data;
 
@@ -187,17 +183,14 @@ export class DocFetcher {
             // Add a small delay to avoid overwhelming the server
             await new Promise((resolve) => setTimeout(resolve, 100));
           } catch (error) {
-            console.error(
-              `Error fetching documentation for ${nodeType}:`,
-              error
-            );
+            console.error(`Error fetching documentation for ${nodeType}:`, error);
           }
         }
       }
 
       return allDocumentation;
     } catch (error) {
-      console.error("Error fetching all nodes:", error);
+      console.error('Error fetching all nodes:', error);
       throw error;
     }
   }
@@ -208,9 +201,7 @@ export class DocFetcher {
    * @param nodeType - The type of node to fetch documentation for
    * @returns Node documentation object
    */
-  async fetchNodeDocumentation(
-    nodeType: string
-  ): Promise<NodeDocumentation | null> {
+  async fetchNodeDocumentation(nodeType: string): Promise<NodeDocumentation | null> {
     try {
       // Check if we have a cached version
       const cachedDoc = await this.getFromCache(nodeType);
@@ -219,7 +210,7 @@ export class DocFetcher {
       }
 
       // Extract node prefix
-      const parts = nodeType.split(".");
+      const parts = nodeType.split('.');
       const prefix = parts[0];
 
       // Generate possible URL patterns to try
@@ -229,20 +220,14 @@ export class DocFetcher {
       possibleUrls.push(this.getDocumentationUrl(nodeType));
 
       // Add alternative URLs based on different patterns
-      if (prefix === "n8n-nodes-base") {
+      if (prefix === 'n8n-nodes-base') {
         possibleUrls.push(`${this.baseUrl}core-nodes/${nodeType}/`);
         possibleUrls.push(`${this.baseUrl}app-nodes/${nodeType}/`);
         possibleUrls.push(`${this.baseUrl}trigger-nodes/${nodeType}/`);
-        possibleUrls.push(
-          `${this.baseUrl}cluster-nodes/root-nodes/${nodeType}/`
-        );
-      } else if (prefix === "n8n-nodes-langchain") {
-        possibleUrls.push(
-          `${this.baseUrl}cluster-nodes/root-nodes/${nodeType}/`
-        );
-        possibleUrls.push(
-          `${this.baseUrl}cluster-nodes/sub-nodes/${nodeType}/`
-        );
+        possibleUrls.push(`${this.baseUrl}cluster-nodes/root-nodes/${nodeType}/`);
+      } else if (prefix === 'n8n-nodes-langchain') {
+        possibleUrls.push(`${this.baseUrl}cluster-nodes/root-nodes/${nodeType}/`);
+        possibleUrls.push(`${this.baseUrl}cluster-nodes/sub-nodes/${nodeType}/`);
       }
 
       // Try each URL until we find one that works
@@ -261,17 +246,13 @@ export class DocFetcher {
           }
         } catch (error) {
           console.log(
-            `URL ${url} failed: ${
-              error instanceof Error ? error.message : String(error)
-            }`
+            `URL ${url} failed: ${error instanceof Error ? error.message : String(error)}`
           );
         }
       }
 
       if (!html || !successfulUrl) {
-        console.error(
-          `Could not fetch documentation for ${nodeType} from any URL`
-        );
+        console.error(`Could not fetch documentation for ${nodeType} from any URL`);
         return null;
       }
 
@@ -296,34 +277,28 @@ export class DocFetcher {
    * @param sourceUrl - The URL where the documentation was fetched from
    * @returns Structured node documentation
    */
-  private parseDocumentation(
-    nodeType: string,
-    html: string,
-    sourceUrl: string
-  ): NodeDocumentation {
+  private parseDocumentation(nodeType: string, html: string, sourceUrl: string): NodeDocumentation {
     const $ = cheerio.load(html);
 
     // Extract basic information
-    const displayName =
-      $("h1").first().text().trim() ||
-      this.getDisplayNameFromNodeType(nodeType);
+    const displayName = $('h1').first().text().trim() || this.getDisplayNameFromNodeType(nodeType);
 
     // Get the main description - usually the first paragraph after the title
-    let description = "";
-    $("h1")
+    let description = '';
+    $('h1')
       .first()
-      .next("p")
+      .next('p')
       .each((_, element) => {
-        description += $(element).text().trim() + " ";
+        description += $(element).text().trim() + ' ';
       });
 
     if (!description) {
       // Try alternative selectors if the first approach didn't work
-      description = $("main p").first().text().trim();
+      description = $('main p').first().text().trim();
     }
 
     // Extract version information if available
-    let version = "1.0";
+    let version = '1.0';
     $("p:contains('Version')").each((_, element) => {
       const versionText = $(element).text().trim();
       const versionMatch = versionText.match(/Version\s*:\s*([0-9.]+)/i);
@@ -336,31 +311,30 @@ export class DocFetcher {
     const parameters: ParameterDocumentation[] = [];
 
     // Look for parameter tables
-    $("table").each((_, table) => {
-      const tableHeading = $(table).prev("h2, h3, h4").text().toLowerCase();
+    $('table').each((_, table) => {
+      const tableHeading = $(table).prev('h2, h3, h4').text().toLowerCase();
       if (
-        tableHeading.includes("parameter") ||
-        tableHeading.includes("option") ||
-        tableHeading.includes("setting")
+        tableHeading.includes('parameter') ||
+        tableHeading.includes('option') ||
+        tableHeading.includes('setting')
       ) {
         // Process the table rows
         $(table)
-          .find("tbody tr")
+          .find('tbody tr')
           .each((_, row) => {
-            const cells = $(row).find("td");
+            const cells = $(row).find('td');
             if (cells.length >= 2) {
               const name = $(cells[0]).text().trim();
               const description = $(cells[1]).text().trim();
 
               // Try to determine if parameter is required
               const isRequired =
-                description.toLowerCase().includes("required") ||
-                $(cells[0]).text().includes("*");
+                description.toLowerCase().includes('required') || $(cells[0]).text().includes('*');
 
               // Try to determine the type
-              let type = "string";
+              let type = 'string';
               if (cells.length >= 3) {
-                type = $(cells[2]).text().trim() || "string";
+                type = $(cells[2]).text().trim() || 'string';
               }
 
               // Add the parameter
@@ -378,8 +352,8 @@ export class DocFetcher {
     // If no parameters found in tables, look for lists
     if (parameters.length === 0) {
       $("h3:contains('Parameters'), h2:contains('Parameters')")
-        .next("ul")
-        .find("li")
+        .next('ul')
+        .find('li')
         .each((_, element) => {
           const text = $(element).text().trim();
           const nameMatch = text.match(/^([^:]+):/);
@@ -388,14 +362,14 @@ export class DocFetcher {
             const description = text.substring(nameMatch[0].length).trim();
 
             // Try to determine if parameter is required
-            const isRequired = description.toLowerCase().includes("required");
+            const isRequired = description.toLowerCase().includes('required');
 
             // Try to determine the type
-            let type = "string";
-            if (text.includes("(number)")) type = "number";
-            if (text.includes("(boolean)")) type = "boolean";
-            if (text.includes("(array)")) type = "array";
-            if (text.includes("(object)")) type = "object";
+            let type = 'string';
+            if (text.includes('(number)')) type = 'number';
+            if (text.includes('(boolean)')) type = 'boolean';
+            if (text.includes('(array)')) type = 'array';
+            if (text.includes('(object)')) type = 'object';
 
             // Add the parameter
             parameters.push({
@@ -414,19 +388,19 @@ export class DocFetcher {
     // Look for example sections
     $("h2:contains('Example'), h3:contains('Example')").each((_, heading) => {
       const title = $(heading).text().trim();
-      let description = "";
+      let description = '';
 
       // Get the description from paragraphs following the heading
       $(heading)
-        .nextUntil("h2, h3, pre")
-        .filter("p")
+        .nextUntil('h2, h3, pre')
+        .filter('p')
         .each((_, element) => {
-          description += $(element).text().trim() + " ";
+          description += $(element).text().trim() + ' ';
         });
 
       // Get the code example if available
-      let code = "";
-      const codeBlock = $(heading).nextAll("pre").first();
+      let code = '';
+      const codeBlock = $(heading).nextAll('pre').first();
       if (codeBlock.length > 0) {
         code = $(codeBlock).text().trim();
       }
@@ -461,15 +435,15 @@ export class DocFetcher {
    */
   private getDisplayNameFromNodeType(nodeType: string): string {
     // Extract the last part of the node type (after the last dot)
-    const namePart = nodeType.split(".").pop() || nodeType;
+    const namePart = nodeType.split('.').pop() || nodeType;
 
     // Convert to title case and handle special cases
     return namePart
-      .replace(/([A-Z])/g, " $1") // Add spaces before capital letters
+      .replace(/([A-Z])/g, ' $1') // Add spaces before capital letters
       .replace(/^./, (str) => str.toUpperCase()) // Capitalize first letter
-      .replace(/Api/g, "API") // Handle common acronyms
-      .replace(/Oauth/g, "OAuth")
-      .replace(/Smtp/g, "SMTP")
+      .replace(/Api/g, 'API') // Handle common acronyms
+      .replace(/Oauth/g, 'OAuth')
+      .replace(/Smtp/g, 'SMTP')
       .trim();
   }
 
@@ -481,33 +455,33 @@ export class DocFetcher {
    */
   private getDocumentationUrl(nodeType: string): string {
     // Extract node prefix and name from the node type
-    const [prefix, nodeName] = nodeType.split(".");
+    const [prefix, nodeName] = nodeType.split('.');
 
     // Check the node prefix to determine the URL pattern
-    if (prefix === "n8n-nodes-langchain") {
+    if (prefix === 'n8n-nodes-langchain') {
       // First check if it's a root node or sub-node
       const rootNodes = [
-        "agent",
-        "chainllm",
-        "chainretrievalqa",
-        "chainsummarization",
-        "information-extractor",
-        "text-classifier",
-        "sentimentanalysis",
-        "code",
-        "vectorstoreinmemory",
-        "vectorstoremilvus",
-        "vectorstoremongodbatlas",
-        "vectorstorepgvector",
-        "vectorstorepinecone",
-        "vectorstoreqdrant",
-        "vectorstoresupabase",
-        "vectorstorezep",
-        "lmchatopenai",
-        "lmchatollama",
-        "embeddingsopenai",
-        "chattrigger",
-        "mcptrigger",
+        'agent',
+        'chainllm',
+        'chainretrievalqa',
+        'chainsummarization',
+        'information-extractor',
+        'text-classifier',
+        'sentimentanalysis',
+        'code',
+        'vectorstoreinmemory',
+        'vectorstoremilvus',
+        'vectorstoremongodbatlas',
+        'vectorstorepgvector',
+        'vectorstorepinecone',
+        'vectorstoreqdrant',
+        'vectorstoresupabase',
+        'vectorstorezep',
+        'lmchatopenai',
+        'lmchatollama',
+        'embeddingsopenai',
+        'chattrigger',
+        'mcptrigger',
       ];
 
       if (
@@ -522,41 +496,39 @@ export class DocFetcher {
     }
 
     // For n8n-nodes-base prefix, determine the category
-    if (prefix === "n8n-nodes-base") {
+    if (prefix === 'n8n-nodes-base') {
       // Check if it's a trigger node (ends with 'Trigger')
-      if (nodeName.toLowerCase().endsWith("trigger")) {
+      if (nodeName.toLowerCase().endsWith('trigger')) {
         return `${this.baseUrl}trigger-nodes/${nodeType}/`;
       }
 
       // Check if it's a well-known app integration
       const appNodeNames = [
-        "gmail",
-        "slack",
-        "airtable",
-        "googleSheets",
-        "dropbox",
-        "github",
-        "githubTrigger",
-        "jira",
-        "notion",
-        "trello",
-        "asana",
-        "twitter",
-        "telegram",
-        "discord",
-        "stripe",
-        "salesforce",
-        "shopify",
-        "zendesk",
-        "zoom",
-        "hubspot",
+        'gmail',
+        'slack',
+        'airtable',
+        'googleSheets',
+        'dropbox',
+        'github',
+        'githubTrigger',
+        'jira',
+        'notion',
+        'trello',
+        'asana',
+        'twitter',
+        'telegram',
+        'discord',
+        'stripe',
+        'salesforce',
+        'shopify',
+        'zendesk',
+        'zoom',
+        'hubspot',
       ];
 
       if (
         appNodeNames.includes(nodeName) ||
-        appNodeNames.some((name) =>
-          nodeName.toLowerCase().includes(name.toLowerCase())
-        )
+        appNodeNames.some((name) => nodeName.toLowerCase().includes(name.toLowerCase()))
       ) {
         return `${this.baseUrl}app-nodes/${nodeType}/`;
       }
@@ -575,14 +547,12 @@ export class DocFetcher {
    * @param nodeType - The type of node
    * @returns Cached documentation or null if not found
    */
-  private async getFromCache(
-    nodeType: string
-  ): Promise<NodeDocumentation | null> {
+  private async getFromCache(nodeType: string): Promise<NodeDocumentation | null> {
     try {
       const cacheFile = path.join(this.cacheDir, `${nodeType}.json`);
-      const data = await fs.readFile(cacheFile, "utf8");
+      const data = await fs.readFile(cacheFile, 'utf8');
       return JSON.parse(data) as NodeDocumentation;
-    } catch (error) {
+    } catch (_error) {
       // File doesn't exist or can't be read
       return null;
     }
@@ -594,12 +564,9 @@ export class DocFetcher {
    * @param nodeType - The type of node
    * @param doc - The documentation to cache
    */
-  private async saveToCache(
-    nodeType: string,
-    doc: NodeDocumentation
-  ): Promise<void> {
+  private async saveToCache(nodeType: string, doc: NodeDocumentation): Promise<void> {
     const cacheFile = path.join(this.cacheDir, `${nodeType}.json`);
-    await fs.writeFile(cacheFile, JSON.stringify(doc, null, 2), "utf8");
+    await fs.writeFile(cacheFile, JSON.stringify(doc, null, 2), 'utf8');
   }
 }
 
@@ -609,10 +576,8 @@ async function main() {
   await fetcher.initialize();
 
   // Fetch documentation for a specific node
-  const httpRequestDoc = await fetcher.fetchNodeDocumentation(
-    "n8n-nodes-base.httpRequest"
-  );
-  console.log("HTTP Request documentation:", httpRequestDoc);
+  const httpRequestDoc = await fetcher.fetchNodeDocumentation('n8n-nodes-base.httpRequest');
+  console.log('HTTP Request documentation:', httpRequestDoc);
 
   // Fetch all nodes (placeholder)
   const allDocs = await fetcher.fetchAllNodes();

@@ -1,7 +1,7 @@
-import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-import { z } from "zod";
-import { n8nServiceV2 } from "../../services/n8nServiceV2.js";
-import { formatError } from "../../utils/errorHandling.js";
+import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
+import { z } from 'zod';
+import { n8nServiceV2 } from '../../services/n8nServiceV2.js';
+import { formatError } from '../../utils/errorHandling.js';
 
 // Define schemas for project-related operations
 const createProjectSchema = {
@@ -24,8 +24,8 @@ const projectIdSchema = {
 export function registerProjectTools(server: McpServer): void {
   // POST /projects - Create a project
   server.tool(
-    "createProject",
-    "Creates a new project in n8n. Requires a name parameter.",
+    'createProject',
+    'Creates a new project in n8n. Requires a name parameter.',
     createProjectSchema,
     async (args) => {
       try {
@@ -34,14 +34,14 @@ export function registerProjectTools(server: McpServer): void {
         return {
           content: [
             {
-              type: "text",
+              type: 'text',
               text: `Project "${name}" created successfully with ID: ${result.id}`,
             },
           ],
           data: result,
         };
       } catch (error) {
-        console.error(`Error creating project:`, error);
+        console.error('Error creating project:', error);
 
         // Use the formatError utility to properly handle ApiError objects
         const errorMessage = formatError(error);
@@ -49,7 +49,7 @@ export function registerProjectTools(server: McpServer): void {
         return {
           content: [
             {
-              type: "text",
+              type: 'text',
               text: `Error creating project: ${errorMessage}`,
             },
           ],
@@ -61,8 +61,8 @@ export function registerProjectTools(server: McpServer): void {
 
   // PUT /projects/{id} - Update a project
   server.tool(
-    "updateProject",
-    "Updates an existing project in n8n. Requires projectId and name parameters.",
+    'updateProject',
+    'Updates an existing project in n8n. Requires projectId and name parameters.',
     updateProjectSchema,
     async (args) => {
       try {
@@ -71,13 +71,13 @@ export function registerProjectTools(server: McpServer): void {
         return {
           content: [
             {
-              type: "text",
+              type: 'text',
               text: `Project ${projectId} updated successfully`,
             },
           ],
         };
       } catch (error) {
-        console.error(`Error updating project:`, error);
+        console.error('Error updating project:', error);
 
         // Use the formatError utility to properly handle ApiError objects
         const errorMessage = formatError(error);
@@ -85,7 +85,7 @@ export function registerProjectTools(server: McpServer): void {
         return {
           content: [
             {
-              type: "text",
+              type: 'text',
               text: `Error updating project: ${errorMessage}`,
             },
           ],
@@ -97,8 +97,8 @@ export function registerProjectTools(server: McpServer): void {
 
   // DELETE /projects/{id} - Delete a project
   server.tool(
-    "deleteProject",
-    "Deletes a project from n8n. Requires projectId parameter.",
+    'deleteProject',
+    'Deletes a project from n8n. Requires projectId parameter.',
     projectIdSchema,
     async (args) => {
       try {
@@ -107,13 +107,13 @@ export function registerProjectTools(server: McpServer): void {
         return {
           content: [
             {
-              type: "text",
+              type: 'text',
               text: `Project ${projectId} deleted successfully`,
             },
           ],
         };
       } catch (error) {
-        console.error(`Error deleting project:`, error);
+        console.error('Error deleting project:', error);
 
         // Use the formatError utility to properly handle ApiError objects
         const errorMessage = formatError(error);
@@ -121,7 +121,7 @@ export function registerProjectTools(server: McpServer): void {
         return {
           content: [
             {
-              type: "text",
+              type: 'text',
               text: `Error deleting project: ${errorMessage}`,
             },
           ],

@@ -4,14 +4,11 @@
  * This module provides MCP tools for querying n8n node documentation.
  */
 
-import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-import { z } from "zod";
-import {
-  DocFetcher,
-  NodeDocumentation,
-} from "../../documentation/docFetcher.js";
-import { VectorStore, SearchResult } from "../../documentation/vectorStore.js";
-import { LocalEmbeddingService } from "../../documentation/embeddingService.js";
+import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
+import { z } from 'zod';
+import { DocFetcher, NodeDocumentation } from '../../documentation/docFetcher.js';
+import { VectorStore, SearchResult } from '../../documentation/vectorStore.js';
+import { LocalEmbeddingService } from '../../documentation/embeddingService.js';
 
 // Service for handling documentation requests
 class DocumentationService {
@@ -29,11 +26,11 @@ class DocumentationService {
     // Will fall back to in-memory if PostgreSQL is not available
     const dbConfig = process.env.PGHOST
       ? {
-          host: process.env.PGHOST || "localhost",
-          port: parseInt(process.env.PGPORT || "5432"),
-          database: process.env.PGDATABASE || "n8n_docs",
-          user: process.env.PGUSER || "postgres",
-          password: process.env.PGPASSWORD || "postgres",
+          host: process.env.PGHOST || 'localhost',
+          port: parseInt(process.env.PGPORT || '5432'),
+          database: process.env.PGDATABASE || 'n8n_docs',
+          user: process.env.PGUSER || 'postgres',
+          password: process.env.PGPASSWORD || 'postgres',
         }
       : null;
 
@@ -73,7 +70,7 @@ class DocumentationService {
    */
   private async _initialize(): Promise<void> {
     try {
-      console.log("Initializing documentation service...");
+      console.log('Initializing documentation service...');
 
       // Initialize components
       await this._fetcher.initialize();
@@ -83,9 +80,9 @@ class DocumentationService {
       await this.loadInitialDocumentation();
 
       this.initialized = true;
-      console.log("Documentation service initialized successfully");
+      console.log('Documentation service initialized successfully');
     } catch (error) {
-      console.error("Error initializing documentation service:", error);
+      console.error('Error initializing documentation service:', error);
       throw error;
     }
   }
@@ -95,26 +92,26 @@ class DocumentationService {
    */
   private async loadInitialDocumentation(): Promise<void> {
     try {
-      console.log("Loading initial documentation cache...");
+      console.log('Loading initial documentation cache...');
 
       // List of common node types to pre-cache
       const commonNodeTypes = [
         // Core nodes
-        "n8n-nodes-base.httpRequest",
-        "n8n-nodes-base.set",
-        "n8n-nodes-base.function",
-        "n8n-nodes-base.if",
-        "n8n-nodes-base.switch",
-        "n8n-nodes-base.gmail",
-        "n8n-nodes-base.webhook",
+        'n8n-nodes-base.httpRequest',
+        'n8n-nodes-base.set',
+        'n8n-nodes-base.function',
+        'n8n-nodes-base.if',
+        'n8n-nodes-base.switch',
+        'n8n-nodes-base.gmail',
+        'n8n-nodes-base.webhook',
 
         // LangChain nodes
-        "n8n-nodes-langchain.agent",
-        "n8n-nodes-langchain.chainllm",
-        "n8n-nodes-langchain.chainretrievalqa",
-        "n8n-nodes-langchain.chainsummarization",
-        "n8n-nodes-langchain.lmchatopenai",
-        "n8n-nodes-langchain.vectorstorepinecone",
+        'n8n-nodes-langchain.agent',
+        'n8n-nodes-langchain.chainllm',
+        'n8n-nodes-langchain.chainretrievalqa',
+        'n8n-nodes-langchain.chainsummarization',
+        'n8n-nodes-langchain.lmchatopenai',
+        'n8n-nodes-langchain.vectorstorepinecone',
       ];
 
       // Fetch and store documentation for each node type
@@ -130,9 +127,9 @@ class DocumentationService {
         }
       }
 
-      console.log("Initial documentation cache loaded");
+      console.log('Initial documentation cache loaded');
     } catch (error) {
-      console.error("Error loading initial documentation:", error);
+      console.error('Error loading initial documentation:', error);
     }
   }
 
@@ -142,9 +139,7 @@ class DocumentationService {
    * @param nodeType - The type of node to get documentation for
    * @returns The node documentation
    */
-  async getNodeDocumentation(
-    nodeType: string
-  ): Promise<NodeDocumentation | null> {
+  async getNodeDocumentation(nodeType: string): Promise<NodeDocumentation | null> {
     await this.initialize();
 
     try {
@@ -176,10 +171,7 @@ class DocumentationService {
    * @param limit - Maximum number of results to return
    * @returns Array of search results
    */
-  async searchDocumentation(
-    query: string,
-    limit: number = 5
-  ): Promise<SearchResult[]> {
+  async searchDocumentation(query: string, limit: number = 5): Promise<SearchResult[]> {
     await this.initialize();
 
     try {
@@ -203,7 +195,7 @@ const documentationService = new DocumentationService();
 export function registerDocumentationTools(server: McpServer): void {
   // Tool to get documentation for a specific node
   server.tool(
-    "getNodeDocumentation",
+    'getNodeDocumentation',
     `Retrieves detailed documentation for a specific n8n node.
 
 Provide the full node type (e.g., "n8n-nodes-base.gmail") to get comprehensive information about the node, including:
@@ -224,15 +216,13 @@ Example:
     async (args) => {
       try {
         const { nodeType } = args;
-        const documentation = await documentationService.getNodeDocumentation(
-          nodeType
-        );
+        const documentation = await documentationService.getNodeDocumentation(nodeType);
 
         if (!documentation) {
           return {
             content: [
               {
-                type: "text",
+                type: 'text',
                 text: `No documentation found for node type "${nodeType}". Please check the node type and try again, or use the fetchNodeDocumentation tool to fetch the latest documentation.`,
               },
             ],
@@ -245,39 +235,39 @@ Example:
           .map(
             (param) =>
               `- ${param.name} (${param.type})${
-                param.required ? " [Required]" : ""
+                param.required ? ' [Required]' : ''
               }: ${param.description}`
           )
-          .join("\n");
+          .join('\n');
 
         const examplesList = documentation.examples
           .map(
             (example) =>
               `### ${example.title}\n${example.description}\n${
-                example.code ? "```javascript\n" + example.code + "\n```" : ""
+                example.code ? '```javascript\n' + example.code + '\n```' : ''
               }`
           )
-          .join("\n\n");
+          .join('\n\n');
 
         return {
           content: [
             {
-              type: "text",
+              type: 'text',
               text: `# ${documentation.displayName} (${documentation.nodeType})
 
 ## Description
 ${documentation.description}
 
 ## Parameters
-${parametersList || "No parameters documented."}
+${parametersList || 'No parameters documented.'}
 
 ## Examples
-${examplesList || "No examples documented."}
+${examplesList || 'No examples documented.'}
 
 ---
 Documentation source: ${documentation.sourceUrl}
 Last updated: ${
-                typeof documentation.fetchedAt === "object" &&
+                typeof documentation.fetchedAt === 'object' &&
                 documentation.fetchedAt instanceof Date
                   ? documentation.fetchedAt.toISOString()
                   : String(documentation.fetchedAt)
@@ -287,11 +277,11 @@ Last updated: ${
           data: documentation,
         };
       } catch (error) {
-        console.error("Error getting node documentation:", error);
+        console.error('Error getting node documentation:', error);
         return {
           content: [
             {
-              type: "text",
+              type: 'text',
               text: `Error retrieving documentation: ${
                 error instanceof Error ? error.message : String(error)
               }`,
@@ -305,7 +295,7 @@ Last updated: ${
 
   // Tool to search for nodes by functionality
   server.tool(
-    "searchNodeDocumentation",
+    'searchNodeDocumentation',
     `Searches for n8n nodes based on functionality or keywords.
 
 Provide a search query describing the functionality you're looking for, and this tool will return relevant n8n nodes that match your requirements.
@@ -324,16 +314,13 @@ Example:
     async (args) => {
       try {
         const { query, limit } = args;
-        const results = await documentationService.searchDocumentation(
-          query,
-          limit
-        );
+        const results = await documentationService.searchDocumentation(query, limit);
 
         if (results.length === 0) {
           return {
             content: [
               {
-                type: "text",
+                type: 'text',
                 text: `No nodes found matching "${query}". Try a different search query or use the fetchNodeDocumentation tool to update the documentation.`,
               },
             ],
@@ -349,14 +336,14 @@ Relevance: ${(result.relevance * 100).toFixed(1)}%
 
 ${result.description}
 
-${result.snippet ? `### Relevant snippet:\n${result.snippet}` : ""}`
+${result.snippet ? `### Relevant snippet:\n${result.snippet}` : ''}`
           )
-          .join("\n\n---\n\n");
+          .join('\n\n---\n\n');
 
         return {
           content: [
             {
-              type: "text",
+              type: 'text',
               text: `# Search Results for "${query}"
 
 ${resultsList}`,
@@ -365,11 +352,11 @@ ${resultsList}`,
           data: results,
         };
       } catch (error) {
-        console.error("Error searching node documentation:", error);
+        console.error('Error searching node documentation:', error);
         return {
           content: [
             {
-              type: "text",
+              type: 'text',
               text: `Error searching documentation: ${
                 error instanceof Error ? error.message : String(error)
               }`,
@@ -383,7 +370,7 @@ ${resultsList}`,
 
   // Tool to get a list of all available node types
   server.tool(
-    "listNodeTypes",
+    'listNodeTypes',
     `Lists all available n8n node types that have documentation.
 
 This tool returns a list of all node types that have documentation available in the system.
@@ -400,16 +387,14 @@ Example:
         await documentationService.initialize();
 
         // Get all node types from the vector store
-        const nodeTypes = await documentationService
-          .getVectorStore()
-          .getAllNodeTypes();
+        const nodeTypes = await documentationService.getVectorStore().getAllNodeTypes();
 
         if (nodeTypes.length === 0) {
           return {
             content: [
               {
-                type: "text",
-                text: "No node documentation is currently available in the system. Use the fetchNodeDocumentation tool to fetch documentation for specific nodes.",
+                type: 'text',
+                text: 'No node documentation is currently available in the system. Use the fetchNodeDocumentation tool to fetch documentation for specific nodes.',
               },
             ],
           };
@@ -420,10 +405,10 @@ Example:
 
         for (const nodeType of nodeTypes) {
           // Extract category from node type (e.g., 'n8n-nodes-base' from 'n8n-nodes-base.gmail')
-          const parts = nodeType.split(".");
+          const parts = nodeType.split('.');
           if (parts.length >= 2) {
             const category = parts[0];
-            const nodeName = parts[1];
+            const _nodeName = parts[1];
 
             if (!categories[category]) {
               categories[category] = [];
@@ -432,15 +417,15 @@ Example:
             categories[category].push(nodeType);
           } else {
             // Handle node types without a category separator
-            if (!categories["other"]) {
-              categories["other"] = [];
+            if (!categories['other']) {
+              categories['other'] = [];
             }
-            categories["other"].push(nodeType);
+            categories['other'].push(nodeType);
           }
         }
 
         // Format the result as a categorized list
-        let formattedList = "# Available n8n Node Types\n\n";
+        let formattedList = '# Available n8n Node Types\n\n';
 
         for (const [category, nodes] of Object.entries(categories)) {
           formattedList += `## ${category}\n\n`;
@@ -449,28 +434,28 @@ Example:
           nodes.sort();
 
           for (const nodeType of nodes) {
-            const nodeName = nodeType.split(".").pop() || nodeType;
+            const nodeName = nodeType.split('.').pop() || nodeType;
             formattedList += `- ${nodeType} (${nodeName})\n`;
           }
 
-          formattedList += "\n";
+          formattedList += '\n';
         }
 
         return {
           content: [
             {
-              type: "text",
+              type: 'text',
               text: formattedList,
             },
           ],
           data: nodeTypes,
         };
       } catch (error) {
-        console.error("Error listing node types:", error);
+        console.error('Error listing node types:', error);
         return {
           content: [
             {
-              type: "text",
+              type: 'text',
               text: `Error listing node types: ${
                 error instanceof Error ? error.message : String(error)
               }`,
@@ -484,7 +469,7 @@ Example:
 
   // Tool to fetch and update documentation for a specific node (NEW TOOL)
   server.tool(
-    "fetchNodeDocumentation",
+    'fetchNodeDocumentation',
     `Fetches and stores the latest documentation for specific n8n nodes.
 
 Use this tool when you need to get up-to-date documentation for nodes that:
@@ -523,8 +508,8 @@ Example for multiple nodes:
           return {
             content: [
               {
-                type: "text",
-                text: "Please specify a nodeType or nodeTypes to fetch documentation for.",
+                type: 'text',
+                text: 'Please specify a nodeType or nodeTypes to fetch documentation for.',
               },
             ],
             isError: true,
@@ -541,21 +526,16 @@ Example for multiple nodes:
             console.log(`Fetching latest documentation for ${nodeType}...`);
 
             // Force fetch from source
-            const fetchedDoc =
-              await documentationService.fetcher.fetchNodeDocumentation(
-                nodeType
-              );
+            const fetchedDoc = await documentationService.fetcher.fetchNodeDocumentation(nodeType);
 
             if (fetchedDoc) {
               // Store the updated documentation
-              await documentationService
-                .getVectorStore()
-                .storeDocumentation(fetchedDoc);
+              await documentationService.getVectorStore().storeDocumentation(fetchedDoc);
 
               results.push({
                 nodeType,
-                status: "success",
-                message: `Successfully fetched and stored latest documentation.`,
+                status: 'success',
+                message: 'Successfully fetched and stored latest documentation.',
                 fetchedAt: fetchedDoc.fetchedAt,
               });
 
@@ -563,8 +543,8 @@ Example for multiple nodes:
             } else {
               results.push({
                 nodeType,
-                status: "failure",
-                message: "No documentation found for this node type.",
+                status: 'failure',
+                message: 'No documentation found for this node type.',
               });
 
               failureCount++;
@@ -572,7 +552,7 @@ Example for multiple nodes:
           } catch (error) {
             results.push({
               nodeType,
-              status: "error",
+              status: 'error',
               message: `Error fetching documentation: ${
                 error instanceof Error ? error.message : String(error)
               }`,
@@ -587,24 +567,23 @@ Example for multiple nodes:
           .map(
             (result) =>
               `- **${result.nodeType}**: ${
-                result.status === "success" ? "✅" : "❌"
+                result.status === 'success' ? '✅' : '❌'
               } ${result.message}${
                 result.fetchedAt
                   ? ` (Fetched at: ${
-                      typeof result.fetchedAt === "object" &&
-                      result.fetchedAt instanceof Date
+                      typeof result.fetchedAt === 'object' && result.fetchedAt instanceof Date
                         ? result.fetchedAt.toISOString()
                         : String(result.fetchedAt)
                     })`
-                  : ""
+                  : ''
               }`
           )
-          .join("\n");
+          .join('\n');
 
         return {
           content: [
             {
-              type: "text",
+              type: 'text',
               text: `# Documentation Fetch Results
 
 ## Summary
@@ -617,19 +596,19 @@ ${resultsList}
 
 ${
   successCount > 0
-    ? "The documentation cache has been updated with the latest information. You can now use getNodeDocumentation to access it."
-    : "No documentation was updated. Please check the node types and try again."
+    ? 'The documentation cache has been updated with the latest information. You can now use getNodeDocumentation to access it.'
+    : 'No documentation was updated. Please check the node types and try again.'
 }`,
             },
           ],
           data: results,
         };
       } catch (error) {
-        console.error("Error fetching node documentation:", error);
+        console.error('Error fetching node documentation:', error);
         return {
           content: [
             {
-              type: "text",
+              type: 'text',
               text: `Error fetching documentation: ${
                 error instanceof Error ? error.message : String(error)
               }`,
@@ -643,7 +622,7 @@ ${
 
   // Tool to trigger documentation update process
   server.tool(
-    "updateDocumentation",
+    'updateDocumentation',
     `Triggers the documentation fetch and cache process for n8n nodes.
 
 This tool will fetch and cache documentation for a list of specified nodes or common nodes if no specific nodes are provided. Use this to proactively build the documentation cache.
@@ -667,32 +646,32 @@ Example for common nodes (default behavior):
         // List of nodes to update
         const nodesToUpdate = args.nodeTypes || [
           // Core nodes
-          "n8n-nodes-base.httpRequest",
-          "n8n-nodes-base.set",
-          "n8n-nodes-base.function",
-          "n8n-nodes-base.if",
-          "n8n-nodes-base.switch",
-          "n8n-nodes-base.gmail",
-          "n8n-nodes-base.webhook",
-          "n8n-nodes-base.merge",
-          "n8n-nodes-base.slack",
-          "n8n-nodes-base.code",
-          "n8n-nodes-base.filter",
-          "n8n-nodes-base.wait",
-          "n8n-nodes-base.graphql",
-          "n8n-nodes-base.s3",
-          "n8n-nodes-base.googleSheets",
-          "n8n-nodes-base.airtable",
+          'n8n-nodes-base.httpRequest',
+          'n8n-nodes-base.set',
+          'n8n-nodes-base.function',
+          'n8n-nodes-base.if',
+          'n8n-nodes-base.switch',
+          'n8n-nodes-base.gmail',
+          'n8n-nodes-base.webhook',
+          'n8n-nodes-base.merge',
+          'n8n-nodes-base.slack',
+          'n8n-nodes-base.code',
+          'n8n-nodes-base.filter',
+          'n8n-nodes-base.wait',
+          'n8n-nodes-base.graphql',
+          'n8n-nodes-base.s3',
+          'n8n-nodes-base.googleSheets',
+          'n8n-nodes-base.airtable',
 
           // LangChain nodes
-          "n8n-nodes-langchain.agent",
-          "n8n-nodes-langchain.chainllm",
-          "n8n-nodes-langchain.chainretrievalqa",
-          "n8n-nodes-langchain.chainsummarization",
-          "n8n-nodes-langchain.lmchatopenai",
-          "n8n-nodes-langchain.vectorstorepinecone",
-          "n8n-nodes-langchain.lmchatollama",
-          "n8n-nodes-langchain.embeddingsopenai",
+          'n8n-nodes-langchain.agent',
+          'n8n-nodes-langchain.chainllm',
+          'n8n-nodes-langchain.chainretrievalqa',
+          'n8n-nodes-langchain.chainsummarization',
+          'n8n-nodes-langchain.lmchatopenai',
+          'n8n-nodes-langchain.vectorstorepinecone',
+          'n8n-nodes-langchain.lmchatollama',
+          'n8n-nodes-langchain.embeddingsopenai',
         ];
 
         // Start the update process
@@ -702,32 +681,27 @@ Example for common nodes (default behavior):
         for (const nodeType of nodesToUpdate) {
           try {
             // Try to fetch documentation
-            const doc =
-              await documentationService.fetcher.fetchNodeDocumentation(
-                nodeType
-              );
+            const doc = await documentationService.fetcher.fetchNodeDocumentation(nodeType);
 
             if (doc) {
               // If successful, store the documentation
-              await documentationService
-                .getVectorStore()
-                .storeDocumentation(doc);
+              await documentationService.getVectorStore().storeDocumentation(doc);
               results.push({
                 nodeType,
-                status: "success",
+                status: 'success',
                 message: `Documentation fetched and stored for ${nodeType}`,
               });
             } else {
               results.push({
                 nodeType,
-                status: "failed",
+                status: 'failed',
                 message: `No documentation found for ${nodeType}`,
               });
             }
           } catch (error) {
             results.push({
               nodeType,
-              status: "error",
+              status: 'error',
               message: `Error updating documentation for ${nodeType}: ${
                 error instanceof Error ? error.message : String(error)
               }`,
@@ -736,29 +710,23 @@ Example for common nodes (default behavior):
         }
 
         // Format the response
-        const successCount = results.filter(
-          (r) => r.status === "success"
-        ).length;
-        const failedCount = results.filter((r) => r.status === "failed").length;
-        const errorCount = results.filter((r) => r.status === "error").length;
+        const successCount = results.filter((r) => r.status === 'success').length;
+        const failedCount = results.filter((r) => r.status === 'failed').length;
+        const errorCount = results.filter((r) => r.status === 'error').length;
 
         const resultsList = results
           .map(
             (r) =>
               `- **${r.nodeType}**: ${
-                r.status === "success"
-                  ? "✅"
-                  : r.status === "failed"
-                  ? "❌"
-                  : "⚠️"
+                r.status === 'success' ? '✅' : r.status === 'failed' ? '❌' : '⚠️'
               } ${r.message}`
           )
-          .join("\n");
+          .join('\n');
 
         return {
           content: [
             {
-              type: "text",
+              type: 'text',
               text: `# Documentation Update Results
 
 ## Summary
@@ -774,11 +742,11 @@ ${resultsList}`,
           data: results,
         };
       } catch (error) {
-        console.error("Error updating documentation:", error);
+        console.error('Error updating documentation:', error);
         return {
           content: [
             {
-              type: "text",
+              type: 'text',
               text: `Error updating documentation: ${
                 error instanceof Error ? error.message : String(error)
               }`,
@@ -792,7 +760,7 @@ ${resultsList}`,
 
   // Tool to trigger documentation update for all n8n nodes
   server.tool(
-    "updateAllNodeDocumentation",
+    'updateAllNodeDocumentation',
     `Updates and caches documentation for all available n8n nodes.
 
 This tool will trigger the fetching and caching of documentation for all n8n nodes that can be discovered from the n8n documentation website. This is a time-consuming operation but ensures comprehensive documentation coverage.
@@ -806,7 +774,7 @@ Example:
         // Initialize the documentation service
         await documentationService.initialize();
 
-        console.log("Starting full documentation update process...");
+        console.log('Starting full documentation update process...');
 
         // Start a longer-running process to fetch all nodes
         let allDocs;
@@ -817,7 +785,7 @@ Example:
           return {
             content: [
               {
-                type: "text",
+                type: 'text',
                 text: `Error fetching node list: ${
                   error instanceof Error ? error.message : String(error)
                 }. Please try again later.`,
@@ -840,15 +808,10 @@ Example:
         (async () => {
           for (const doc of allDocs) {
             try {
-              await documentationService
-                .getVectorStore()
-                .storeDocumentation(doc);
+              await documentationService.getVectorStore().storeDocumentation(doc);
               results.successful++;
             } catch (error) {
-              console.error(
-                `Error storing documentation for ${doc.nodeType}:`,
-                error
-              );
+              console.error(`Error storing documentation for ${doc.nodeType}:`, error);
               results.failed++;
             }
             results.processed++;
@@ -869,7 +832,7 @@ Example:
         return {
           content: [
             {
-              type: "text",
+              type: 'text',
               text: `# Full Documentation Update Initiated
 
 A full documentation update process has been started in the background. This will fetch and store documentation for all available n8n nodes (approximately ${allDocs.length} nodes).
@@ -886,11 +849,11 @@ Use the listNodeTypes tool after some time to see which nodes have been document
           data: results,
         };
       } catch (error) {
-        console.error("Error initiating full documentation update:", error);
+        console.error('Error initiating full documentation update:', error);
         return {
           content: [
             {
-              type: "text",
+              type: 'text',
               text: `Error initiating full documentation update: ${
                 error instanceof Error ? error.message : String(error)
               }`,

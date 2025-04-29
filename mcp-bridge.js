@@ -12,12 +12,12 @@ import readline from 'readline';
 console.error('Starting n8n-mcp server...');
 const server = spawn('node', ['dist/server.js'], {
   stdio: 'ignore',
-  detached: true
+  detached: true,
 });
 
 // Generate a UUID for the session ID
 // This is important as the server expects a specific format
-const sessionId = "00000000-0000-0000-0000-000000000000";
+const sessionId = '00000000-0000-0000-0000-000000000000';
 console.error(`Using session ID: ${sessionId}`);
 
 // Give the server a moment to start up
@@ -27,7 +27,7 @@ setTimeout(async () => {
   // Create readline interface for stdin only
   const rl = readline.createInterface({
     input: process.stdin,
-    terminal: false
+    terminal: false,
   });
 
   // Ping the server to make sure it's ready
@@ -36,7 +36,7 @@ setTimeout(async () => {
       jsonrpc: '2.0',
       method: 'ping',
       params: {},
-      id: 'ping-1'
+      id: 'ping-1',
     });
     console.error('Server is ready to receive messages');
   } catch (error) {
@@ -68,7 +68,7 @@ setTimeout(async () => {
         } else {
           // For other notifications, we don't need to send a response
           // Just forward to the HTTP server and ignore the response
-          sendToHttpServer(message).catch(error => {
+          sendToHttpServer(message).catch((error) => {
             console.error(`Error forwarding notification: ${error.message}`);
           });
         }
@@ -84,14 +84,16 @@ setTimeout(async () => {
           console.log(JSON.stringify(response));
         } catch (error) {
           console.error(`Error sending initialize request: ${error.message}`);
-          console.log(JSON.stringify({
-            jsonrpc: '2.0',
-            error: {
-              code: -32603,
-              message: `Internal error: ${error.message}`
-            },
-            id: message.id || null
-          }));
+          console.log(
+            JSON.stringify({
+              jsonrpc: '2.0',
+              error: {
+                code: -32603,
+                message: `Internal error: ${error.message}`,
+              },
+              id: message.id || null,
+            })
+          );
         }
         return;
       }
@@ -105,14 +107,16 @@ setTimeout(async () => {
           console.log(JSON.stringify(response));
         } catch (error) {
           console.error(`Error sending ${message.method} request: ${error.message}`);
-          console.log(JSON.stringify({
-            jsonrpc: '2.0',
-            error: {
-              code: -32603,
-              message: `Internal error: ${error.message}`
-            },
-            id: message.id || null
-          }));
+          console.log(
+            JSON.stringify({
+              jsonrpc: '2.0',
+              error: {
+                code: -32603,
+                message: `Internal error: ${error.message}`,
+              },
+              id: message.id || null,
+            })
+          );
         }
         return;
       }
@@ -132,26 +136,30 @@ setTimeout(async () => {
       } catch (error) {
         console.error(`Error sending to HTTP server: ${error.message}`);
         // Send error response
-        console.log(JSON.stringify({
-          jsonrpc: '2.0',
-          error: {
-            code: -32603,
-            message: `Internal error: ${error.message}`
-          },
-          id: message.id || null
-        }));
+        console.log(
+          JSON.stringify({
+            jsonrpc: '2.0',
+            error: {
+              code: -32603,
+              message: `Internal error: ${error.message}`,
+            },
+            id: message.id || null,
+          })
+        );
       }
     } catch (error) {
       console.error(`Error parsing message: ${error.message}`);
       // Send error response for parse errors
-      console.log(JSON.stringify({
-        jsonrpc: '2.0',
-        error: {
-          code: -32700,
-          message: `Parse error: ${error.message}`
-        },
-        id: null
-      }));
+      console.log(
+        JSON.stringify({
+          jsonrpc: '2.0',
+          error: {
+            code: -32700,
+            message: `Parse error: ${error.message}`,
+          },
+          id: null,
+        })
+      );
     }
   });
 
@@ -170,7 +178,6 @@ setTimeout(async () => {
 
   // Send initialization success message
   console.error('Bridge ready to process messages');
-
 }, 2000); // Wait 2 seconds for the server to start
 
 // Function to send messages to the HTTP server
@@ -191,10 +198,10 @@ async function sendToHttpServer(message) {
       headers: {
         'Content-Type': 'application/json',
         'Content-Length': data.length,
-        'Accept': 'application/json, text/event-stream',
+        Accept: 'application/json, text/event-stream',
         // IMPORTANT: The header must be lowercase as that's what the server expects
-        'mcp-session-id': sessionId
-      }
+        'mcp-session-id': sessionId,
+      },
     };
 
     // Log the complete request details for debugging
@@ -266,7 +273,10 @@ async function sendToHttpServer(message) {
           }
 
           // For notifications or methods that don't require a response
-          if (message.method && (message.method.startsWith('notifications/') || message.method === 'shutdown')) {
+          if (
+            message.method &&
+            (message.method.startsWith('notifications/') || message.method === 'shutdown')
+          ) {
             resolve({ jsonrpc: '2.0', result: null, id: message.id || null });
             return;
           }

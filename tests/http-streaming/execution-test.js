@@ -14,15 +14,18 @@ function parseSSE(text) {
 
   for (const event of events) {
     const lines = event.split('\n');
-    const eventType = lines.find(line => line.startsWith('event:'))?.substring(7).trim();
-    const dataLine = lines.find(line => line.startsWith('data:'));
+    const eventType = lines
+      .find((line) => line.startsWith('event:'))
+      ?.substring(7)
+      .trim();
+    const dataLine = lines.find((line) => line.startsWith('data:'));
 
     if (dataLine) {
       const data = dataLine.substring(5).trim();
       try {
         const jsonData = JSON.parse(data);
         results.push({ type: eventType, data: jsonData });
-      } catch (e) {
+      } catch (_e) {
         results.push({ type: eventType, data });
       }
     }
@@ -45,8 +48,8 @@ async function main() {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Accept': 'application/json, text/event-stream',
-        'X-Session-Id': sessionId
+        Accept: 'application/json, text/event-stream',
+        'X-Session-Id': sessionId,
       },
       body: JSON.stringify({
         jsonrpc: '2.0',
@@ -57,10 +60,10 @@ async function main() {
           capabilities: {},
           clientInfo: {
             name: 'Execution Test Client',
-            version: '1.0.0'
-          }
-        }
-      })
+            version: '1.0.0',
+          },
+        },
+      }),
     });
 
     console.log('Response status:', initResponse.status);
@@ -76,14 +79,14 @@ async function main() {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Accept': 'application/json, text/event-stream',
+        Accept: 'application/json, text/event-stream',
         'X-Session-Id': sessionId,
-        'Mcp-Session-Id': sessionId
+        'Mcp-Session-Id': sessionId,
       },
       body: JSON.stringify({
         jsonrpc: '2.0',
-        method: 'notifications/initialized'
-      })
+        method: 'notifications/initialized',
+      }),
     });
 
     console.log('Notification status:', notifyResponse.status);
@@ -99,19 +102,19 @@ async function main() {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Accept': 'application/json, text/event-stream',
+          Accept: 'application/json, text/event-stream',
           'X-Session-Id': sessionId,
-          'Mcp-Session-Id': sessionId
+          'Mcp-Session-Id': sessionId,
         },
         body: JSON.stringify({
           jsonrpc: '2.0',
           id: 1,
           method: 'readResource',
           params: {
-            uri: 'n8n://executions'
-          }
+            uri: 'n8n://executions',
+          },
         }),
-        signal: controller.signal
+        signal: controller.signal,
       });
 
       clearTimeout(timeoutId);
@@ -119,7 +122,9 @@ async function main() {
       console.log('Executions response:', executionsText);
     } catch (error) {
       if (error.name === 'AbortError') {
-        console.log('Executions request timed out - this is expected if no n8n instance is available');
+        console.log(
+          'Executions request timed out - this is expected if no n8n instance is available'
+        );
       } else {
         console.error('Error fetching executions:', error);
       }
@@ -137,19 +142,19 @@ async function main() {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Accept': 'application/json, text/event-stream',
+          Accept: 'application/json, text/event-stream',
           'X-Session-Id': sessionId,
-          'Mcp-Session-Id': sessionId
+          'Mcp-Session-Id': sessionId,
         },
         body: JSON.stringify({
           jsonrpc: '2.0',
           id: 2,
           method: 'readResource',
           params: {
-            uri: 'n8n://workflows'
-          }
+            uri: 'n8n://workflows',
+          },
         }),
-        signal: controller.signal
+        signal: controller.signal,
       });
 
       clearTimeout(timeoutId);
@@ -157,7 +162,9 @@ async function main() {
       console.log('Workflows response:', workflowsText);
     } catch (error) {
       if (error.name === 'AbortError') {
-        console.log('Workflows request timed out - this is expected if no n8n instance is available');
+        console.log(
+          'Workflows request timed out - this is expected if no n8n instance is available'
+        );
       } else {
         console.error('Error fetching workflows:', error);
       }
@@ -167,7 +174,11 @@ async function main() {
     let workflowId = null;
     try {
       const workflowsData = JSON.parse(workflowsText);
-      if (workflowsData.result && workflowsData.result.contents && workflowsData.result.contents.length > 0) {
+      if (
+        workflowsData.result &&
+        workflowsData.result.contents &&
+        workflowsData.result.contents.length > 0
+      ) {
         const workflowsContent = JSON.parse(workflowsData.result.contents[0].text);
         if (workflowsContent.data && workflowsContent.data.length > 0) {
           workflowId = workflowsContent.data[0].id;
@@ -190,9 +201,9 @@ async function main() {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'Accept': 'application/json, text/event-stream',
+            Accept: 'application/json, text/event-stream',
             'X-Session-Id': sessionId,
-            'Mcp-Session-Id': sessionId
+            'Mcp-Session-Id': sessionId,
           },
           body: JSON.stringify({
             jsonrpc: '2.0',
@@ -201,11 +212,11 @@ async function main() {
             params: {
               name: 'executeWorkflow',
               args: {
-                workflowId: workflowId
-              }
-            }
+                workflowId: workflowId,
+              },
+            },
           }),
-          signal: controller.signal
+          signal: controller.signal,
         });
 
         clearTimeout(timeoutId);
@@ -213,7 +224,9 @@ async function main() {
         console.log('Execute workflow response:', executeText);
       } catch (error) {
         if (error.name === 'AbortError') {
-          console.log('Execute workflow request timed out - this is expected if no n8n instance is available');
+          console.log(
+            'Execute workflow request timed out - this is expected if no n8n instance is available'
+          );
         } else {
           console.error('Error executing workflow:', error);
         }

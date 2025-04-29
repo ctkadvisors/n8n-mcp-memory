@@ -1,6 +1,6 @@
-import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-import { z } from "zod";
-import { n8nServiceV2 } from "../../services/n8nServiceV2.js";
+import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
+import { z } from 'zod';
+import { n8nServiceV2 } from '../../services/n8nServiceV2.js';
 
 // Define schemas for source control operations
 const pullSchema = {
@@ -15,8 +15,8 @@ const pullSchema = {
 export function registerSourceControlTools(server: McpServer): void {
   // POST /source-control/pull - Pull changes from the remote repository
   server.tool(
-    "pullFromSourceControl",
-    "Pulls changes from the remote repository. Optional parameters: force (boolean) and variables (record).",
+    'pullFromSourceControl',
+    'Pulls changes from the remote repository. Optional parameters: force (boolean) and variables (record).',
     pullSchema,
     async (args) => {
       try {
@@ -32,22 +32,16 @@ export function registerSourceControlTools(server: McpServer): void {
             ? `Added: ${result.variables.added?.length || 0}, Changed: ${
                 result.variables.changed?.length || 0
               }`
-            : "None",
-          credentials: result.credentials
-            ? `${result.credentials.length} credential(s)`
-            : "None",
-          workflows: result.workflows
-            ? `${result.workflows.length} workflow(s)`
-            : "None",
-          tags: result.tags?.tags
-            ? `${result.tags.tags.length} tag(s)`
-            : "None",
+            : 'None',
+          credentials: result.credentials ? `${result.credentials.length} credential(s)` : 'None',
+          workflows: result.workflows ? `${result.workflows.length} workflow(s)` : 'None',
+          tags: result.tags?.tags ? `${result.tags.tags.length} tag(s)` : 'None',
         };
 
         return {
           content: [
             {
-              type: "text",
+              type: 'text',
               text: `Successfully pulled from source control:\n${JSON.stringify(
                 formattedResult,
                 null,
@@ -58,11 +52,11 @@ export function registerSourceControlTools(server: McpServer): void {
           data: result,
         };
       } catch (error) {
-        console.error(`Error pulling from source control:`, error);
+        console.error('Error pulling from source control:', error);
         return {
           content: [
             {
-              type: "text",
+              type: 'text',
               text: `Error pulling from source control: ${
                 error instanceof Error ? error.message : String(error)
               }`,

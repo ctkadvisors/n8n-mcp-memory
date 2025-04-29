@@ -1,6 +1,6 @@
-import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-import { z } from "zod";
-import { n8nServiceV2 } from "../../services/n8nServiceV2.js";
+import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
+import { z } from 'zod';
+import { n8nServiceV2 } from '../../services/n8nServiceV2.js';
 
 // Define schemas for credential-related operations
 const createCredentialSchema = {
@@ -25,8 +25,8 @@ const transferCredentialSchema = {
 export function registerCredentialTools(server: McpServer): void {
   // POST /credentials - Create a credential
   server.tool(
-    "createCredential",
-    "Creates a new credential in n8n. Requires name, type, and data parameters.",
+    'createCredential',
+    'Creates a new credential in n8n. Requires name, type, and data parameters.',
     createCredentialSchema,
     async (args) => {
       try {
@@ -39,18 +39,18 @@ export function registerCredentialTools(server: McpServer): void {
         return {
           content: [
             {
-              type: "text",
+              type: 'text',
               text: `Credential "${name}" created successfully with ID: ${result.id}`,
             },
           ],
           data: result,
         };
       } catch (error) {
-        console.error(`Error creating credential:`, error);
+        console.error('Error creating credential:', error);
         return {
           content: [
             {
-              type: "text",
+              type: 'text',
               text: `Error creating credential: ${
                 error instanceof Error ? error.message : String(error)
               }`,
@@ -64,8 +64,8 @@ export function registerCredentialTools(server: McpServer): void {
 
   // DELETE /credentials/{id} - Delete a credential
   server.tool(
-    "deleteCredential",
-    "Deletes a credential from n8n. Requires credentialId parameter.",
+    'deleteCredential',
+    'Deletes a credential from n8n. Requires credentialId parameter.',
     credentialIdSchema,
     async (args) => {
       try {
@@ -74,18 +74,18 @@ export function registerCredentialTools(server: McpServer): void {
         return {
           content: [
             {
-              type: "text",
+              type: 'text',
               text: `Credential "${result.name}" deleted successfully`,
             },
           ],
           data: result,
         };
       } catch (error) {
-        console.error(`Error deleting credential:`, error);
+        console.error('Error deleting credential:', error);
         return {
           content: [
             {
-              type: "text",
+              type: 'text',
               text: `Error deleting credential: ${
                 error instanceof Error ? error.message : String(error)
               }`,
@@ -99,8 +99,8 @@ export function registerCredentialTools(server: McpServer): void {
 
   // PUT /credentials/{id}/transfer - Transfer a credential
   server.tool(
-    "transferCredential",
-    "Transfers a credential to another project. Requires credentialId and destinationProjectId parameters.",
+    'transferCredential',
+    'Transfers a credential to another project. Requires credentialId and destinationProjectId parameters.',
     transferCredentialSchema,
     async (args) => {
       try {
@@ -111,17 +111,17 @@ export function registerCredentialTools(server: McpServer): void {
         return {
           content: [
             {
-              type: "text",
+              type: 'text',
               text: `Credential ${credentialId} transferred to project ${destinationProjectId} successfully`,
             },
           ],
         };
       } catch (error) {
-        console.error(`Error transferring credential:`, error);
+        console.error('Error transferring credential:', error);
         return {
           content: [
             {
-              type: "text",
+              type: 'text',
               text: `Error transferring credential: ${
                 error instanceof Error ? error.message : String(error)
               }`,

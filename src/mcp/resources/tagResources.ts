@@ -1,5 +1,5 @@
-import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-import { n8nServiceV2 } from "../../services/n8nServiceV2.js";
+import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
+import { n8nServiceV2 } from '../../services/n8nServiceV2.js';
 
 /**
  * Register tag-related resources with the MCP server
@@ -8,11 +8,11 @@ import { n8nServiceV2 } from "../../services/n8nServiceV2.js";
 export function registerTagResources(server: McpServer): void {
   // GET /tags - List all tags
   server.resource(
-    "n8nTags",
-    "n8n://tags",
+    'n8nTags',
+    'n8n://tags',
     {
-      name: "n8n Tags",
-      description: "Lists all tags in your n8n instance.",
+      name: 'n8n Tags',
+      description: 'Lists all tags in your n8n instance.',
     },
     async (uri) => {
       try {
@@ -26,7 +26,7 @@ export function registerTagResources(server: McpServer): void {
           ],
         };
       } catch (error) {
-        console.error("Error fetching n8n tags:", error);
+        console.error('Error fetching n8n tags:', error);
         return {
           contents: [
             {

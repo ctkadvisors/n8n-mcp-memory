@@ -6,8 +6,8 @@
 export interface WorkflowSettings {
   saveExecutionProgress?: boolean;
   saveManualExecutions?: boolean;
-  saveDataErrorExecution?: "all" | "none";
-  saveDataSuccessExecution?: "all" | "none";
+  saveDataErrorExecution?: 'all' | 'none';
+  saveDataSuccessExecution?: 'all' | 'none';
   executionTimeout?: number;
   errorWorkflow?: string;
   timezone?: string;
@@ -111,15 +111,7 @@ export interface Execution {
   id: number;
   data?: Record<string, any>;
   finished: boolean;
-  mode:
-    | "cli"
-    | "error"
-    | "integrated"
-    | "internal"
-    | "manual"
-    | "retry"
-    | "trigger"
-    | "webhook";
+  mode: 'cli' | 'error' | 'integrated' | 'internal' | 'manual' | 'retry' | 'trigger' | 'webhook';
   retryOf?: number | null;
   retrySuccessId?: number | null;
   startedAt: string;
@@ -135,7 +127,7 @@ export interface ExecutionListResponse {
 }
 
 export interface ExecutionListParams {
-  status?: "error" | "success" | "waiting";
+  status?: 'error' | 'success' | 'waiting';
   workflowId?: string;
   projectId?: string;
   includeData?: boolean;
@@ -203,7 +195,7 @@ export interface UserListParams {
 
 export interface CreateUserParams {
   email: string;
-  role: "global:admin" | "global:member";
+  role: 'global:admin' | 'global:member';
 }
 
 export interface CreateUserResponse {
@@ -217,7 +209,7 @@ export interface CreateUserResponse {
 }
 
 export interface ChangeRoleParams {
-  newRoleName: "global:admin" | "global:member";
+  newRoleName: 'global:admin' | 'global:member';
 }
 
 // Project types
@@ -297,9 +289,7 @@ export interface ImportResult {
 export interface AuditOptions {
   additionalOptions?: {
     daysAbandonedWorkflow?: number;
-    categories?: Array<
-      "credentials" | "database" | "nodes" | "filesystem" | "instance"
-    >;
+    categories?: Array<'credentials' | 'database' | 'nodes' | 'filesystem' | 'instance'>;
   };
 }
 

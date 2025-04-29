@@ -1,8 +1,5 @@
-import {
-  McpServer,
-  ResourceTemplate,
-} from "@modelcontextprotocol/sdk/server/mcp.js";
-import { n8nServiceV2 } from "../../services/n8nServiceV2.js";
+import { McpServer, ResourceTemplate } from '@modelcontextprotocol/sdk/server/mcp.js';
+import { n8nServiceV2 } from '../../services/n8nServiceV2.js';
 
 /**
  * Register credential-related resources with the MCP server
@@ -11,13 +8,13 @@ import { n8nServiceV2 } from "../../services/n8nServiceV2.js";
 export function registerCredentialResources(server: McpServer): void {
   // GET /credentials/schema/{credentialTypeName} - Get credential schema
   server.resource(
-    "n8nCredentialSchema",
-    new ResourceTemplate("n8n://credentials/schema/{credentialTypeName}", {
+    'n8nCredentialSchema',
+    new ResourceTemplate('n8n://credentials/schema/{credentialTypeName}', {
       list: undefined,
     }),
     {
-      name: "n8n Credential Schema",
-      description: "Gets the schema for a specific credential type.",
+      name: 'n8n Credential Schema',
+      description: 'Gets the schema for a specific credential type.',
     },
     async (uri, params) => {
       try {
@@ -36,7 +33,7 @@ export function registerCredentialResources(server: McpServer): void {
           ],
         };
       } catch (error) {
-        console.error(`Error fetching credential schema:`, error);
+        console.error('Error fetching credential schema:', error);
         return {
           contents: [
             {

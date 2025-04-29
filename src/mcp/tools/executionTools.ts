@@ -1,7 +1,7 @@
-import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-import { z } from "zod";
-import { n8nServiceV2 } from "../../services/n8nServiceV2.js";
-import { formatError } from "../../utils/errorHandling.js";
+import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
+import { z } from 'zod';
+import { n8nServiceV2 } from '../../services/n8nServiceV2.js';
+import { formatError } from '../../utils/errorHandling.js';
 
 // Define schemas for execution-related operations
 const executionIdSchema = {
@@ -29,8 +29,8 @@ const workflowExecuteSchema = {
 export function registerExecutionTools(server: McpServer): void {
   // DELETE /executions/{id} - Delete an execution
   server.tool(
-    "deleteExecution",
-    "Deletes an execution from n8n. Requires executionId.",
+    'deleteExecution',
+    'Deletes an execution from n8n. Requires executionId.',
     executionIdSchema,
     async (args) => {
       try {
@@ -39,14 +39,14 @@ export function registerExecutionTools(server: McpServer): void {
         return {
           content: [
             {
-              type: "text",
+              type: 'text',
               text: `Execution ${executionId} deleted successfully`,
             },
           ],
           data: result,
         };
       } catch (error) {
-        console.error(`Error deleting execution:`, error);
+        console.error('Error deleting execution:', error);
 
         // Use the formatError utility to properly handle ApiError objects
         const errorMessage = formatError(error);
@@ -54,7 +54,7 @@ export function registerExecutionTools(server: McpServer): void {
         return {
           content: [
             {
-              type: "text",
+              type: 'text',
               text: `Error deleting execution: ${errorMessage}`,
             },
           ],
@@ -66,8 +66,8 @@ export function registerExecutionTools(server: McpServer): void {
 
   // POST /workflows/{id}/execute - Execute a workflow
   server.tool(
-    "executeWorkflow",
-    "Executes a workflow in n8n. Requires workflowId and optional execution parameters.",
+    'executeWorkflow',
+    'Executes a workflow in n8n. Requires workflowId and optional execution parameters.',
     workflowExecuteSchema,
     async (args) => {
       try {
@@ -75,21 +75,18 @@ export function registerExecutionTools(server: McpServer): void {
         // Convert params to WorkflowExecuteParams
         const executeParams: any = params || {};
 
-        const result = await n8nServiceV2.executeWorkflow(
-          workflowId,
-          executeParams
-        );
+        const result = await n8nServiceV2.executeWorkflow(workflowId, executeParams);
         return {
           content: [
             {
-              type: "text",
+              type: 'text',
               text: `Workflow ${workflowId} executed successfully`,
             },
           ],
           data: result,
         };
       } catch (error) {
-        console.error(`Error executing workflow:`, error);
+        console.error('Error executing workflow:', error);
 
         // Use the formatError utility to properly handle ApiError objects
         const errorMessage = formatError(error);
@@ -97,7 +94,7 @@ export function registerExecutionTools(server: McpServer): void {
         return {
           content: [
             {
-              type: "text",
+              type: 'text',
               text: `Error executing workflow: ${errorMessage}`,
             },
           ],

@@ -1,9 +1,9 @@
-import express from "express";
-import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-import { StreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/streamableHttp.js";
-import { isInitializeRequest } from "@modelcontextprotocol/sdk/types.js";
-import env from "./utils/env.js";
-import { registerN8nIntegration } from "./mcp/n8nIntegration.js";
+import express from 'express';
+import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
+import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/streamableHttp.js';
+import { isInitializeRequest } from '@modelcontextprotocol/sdk/types.js';
+import env from './utils/env.js';
+import { registerN8nIntegration } from './mcp/n8nIntegration.js';
 
 // Create Express app
 const app = express();
@@ -14,16 +14,16 @@ const transports: { [sessionId: string]: StreamableHTTPServerTransport } = {};
 
 // Create a new MCP server instance
 const mcpServer = new McpServer({
-  name: "MCP HTTP Streaming Example with n8n Integration",
-  version: "1.0.0",
+  name: 'MCP HTTP Streaming Example with n8n Integration',
+  version: '1.0.0',
 });
 
 // Add a simple greeting resource
-mcpServer.resource("greeting", "greeting://hello", async (uri: URL) => ({
+mcpServer.resource('greeting', 'greeting://hello', async (uri: URL) => ({
   contents: [
     {
       uri: uri.href,
-      text: "Hello from MCP HTTP Streaming Server!",
+      text: 'Hello from MCP HTTP Streaming Server!',
     },
   ],
 }));
@@ -32,15 +32,15 @@ mcpServer.resource("greeting", "greeting://hello", async (uri: URL) => ({
 registerN8nIntegration(mcpServer);
 
 // Handle POST requests for client-to-server communication
-app.post("/mcp", async (req, res) => {
+app.post('/mcp', async (req, res) => {
   try {
-    console.log("Received request:", req.body);
+    console.log('Received request:', req.body);
 
     // Handle ping requests specially (for health checks)
-    if (req.body && req.body.method === "ping") {
-      console.log("Received ping request, responding with pong");
+    if (req.body && req.body.method === 'ping') {
+      console.log('Received ping request, responding with pong');
       res.json({
-        jsonrpc: "2.0",
+        jsonrpc: '2.0',
         result: { pong: true },
         id: req.body.id,
       });
@@ -49,28 +49,28 @@ app.post("/mcp", async (req, res) => {
 
     // IMPORTANT: We're using a fixed session ID for all requests
     // This is a workaround for the session ID issue
-    const sessionId = "fixed-session-id-for-all-requests";
-    console.log("Using fixed session ID for all requests:", sessionId);
+    const sessionId = 'fixed-session-id-for-all-requests';
+    console.log('Using fixed session ID for all requests:', sessionId);
 
     // Add the session ID to the response headers so the client can use it
-    res.setHeader("Mcp-Session-Id", sessionId);
+    res.setHeader('Mcp-Session-Id', sessionId);
 
     // Log all headers for debugging
-    console.log("Request headers:", req.headers);
-    console.log("Session ID being used:", sessionId);
+    console.log('Request headers:', req.headers);
+    console.log('Session ID being used:', sessionId);
 
-    console.log("Using Session ID:", sessionId);
+    console.log('Using Session ID:', sessionId);
 
     // Check if this is an initialization request
     const isInitRequest = isInitializeRequest(req.body);
 
     // Always create a new transport for initialization requests
     if (isInitRequest) {
-      console.log("Received initialization request for session:", sessionId);
+      console.log('Received initialization request for session:', sessionId);
 
       // If we already have a transport for this session, close it
       if (transports[sessionId]) {
-        console.log("Closing existing transport for session:", sessionId);
+        console.log('Closing existing transport for session:', sessionId);
         await transports[sessionId].close();
         delete transports[sessionId];
       }
@@ -79,13 +79,13 @@ app.post("/mcp", async (req, res) => {
     // For non-init requests, if we don't have a transport, create one anyway
     // This is more lenient and helps with session handling issues
     if (!transports[sessionId]) {
-      console.log("Creating new transport for session:", sessionId);
+      console.log('Creating new transport for session:', sessionId);
     }
 
     // Get or create a transport for this session
     let transport = transports[sessionId];
     if (!transport) {
-      console.log("Creating new transport for session:", sessionId);
+      console.log('Creating new transport for session:', sessionId);
 
       // Create a transport in stateless mode (no session ID validation)
       transport = new StreamableHTTPServerTransport({
@@ -96,26 +96,26 @@ app.post("/mcp", async (req, res) => {
       transports[sessionId] = transport;
 
       // Connect the transport to the MCP server
-      console.log("Connecting server to transport");
+      console.log('Connecting server to transport');
       await mcpServer.connect(transport);
-      console.log("Server connected to transport");
+      console.log('Server connected to transport');
     }
 
     // Always set these headers in the response
-    res.setHeader("X-Session-Id", sessionId);
-    res.setHeader("Mcp-Session-Id", sessionId);
+    res.setHeader('X-Session-Id', sessionId);
+    res.setHeader('Mcp-Session-Id', sessionId);
 
     // Handle the request
-    console.log("Handling request");
+    console.log('Handling request');
     await transport.handleRequest(req, res, req.body);
-    console.log("Request handled");
+    console.log('Request handled');
   } catch (error) {
-    console.error("Error handling request:", error);
+    console.error('Error handling request:', error);
 
     // Ensure we return a properly formatted JSON-RPC error response
     const errorMessage = error instanceof Error ? error.message : String(error);
     const errorResponse = {
-      jsonrpc: "2.0",
+      jsonrpc: '2.0',
       error: {
         code: -32603, // Internal JSON-RPC error
         message: `Internal error: ${errorMessage}`,
@@ -128,7 +128,7 @@ app.post("/mcp", async (req, res) => {
 });
 
 // Add a simple HTML page for testing
-app.get("/", (_, res) => {
+app.get('/', (_, res) => {
   res.send(`
     <!DOCTYPE html>
     <html>
@@ -377,9 +377,7 @@ app.get("/", (_, res) => {
 // Start the server
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.log(
-    `MCP HTTP Streaming Server with n8n Integration listening on port ${PORT}`
-  );
+  console.log(`MCP HTTP Streaming Server with n8n Integration listening on port ${PORT}`);
   console.log(`Visit http://localhost:${PORT} for more information`);
   console.log(`Using n8n API URL: ${env.N8N_API_URL}`);
 });

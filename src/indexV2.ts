@@ -2,7 +2,7 @@ import express from 'express';
 import { randomUUID } from 'node:crypto';
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/streamableHttp.js';
-import { isInitializeRequest } from '@modelcontextprotocol/sdk/types.js';
+import { _isInitializeRequest } from '@modelcontextprotocol/sdk/types.js';
 import { z } from 'zod';
 import env from './utils/env.js';
 import { registerN8nIntegration } from './mcp/n8nIntegration.js';
@@ -45,27 +45,27 @@ const createServer = () => {
 // Handle POST requests for client-to-server communication
 app.post('/mcp', async (req, res) => {
   // Check for existing session ID
-  const sessionId = req.headers['x-session-id'] as string || randomUUID();
-  
+  const sessionId = (req.headers['x-session-id'] as string) || randomUUID();
+
   // Get or create a transport for this session
   let transport = transports[sessionId];
   if (!transport) {
     transport = new StreamableHTTPServerTransport();
     transports[sessionId] = transport;
-    
+
     // Create a new server instance for this session
     const server = createServer();
-    
+
     // Connect the server to the transport
     await server.connect(transport);
   }
-  
+
   // Handle the request
   const response = await transport.handleRequest(req.body);
-  
+
   // Set the session ID header
   res.setHeader('X-Session-Id', sessionId);
-  
+
   // Send the response
   res.json(response);
 });
@@ -77,15 +77,15 @@ app.get('/mcp', async (req, res) => {
   if (!sessionId || !transports[sessionId]) {
     return res.status(400).json({ error: 'Invalid or missing session ID' });
   }
-  
+
   // Get the transport for this session
   const transport = transports[sessionId];
-  
+
   // Set up streaming response
   res.setHeader('Content-Type', 'text/event-stream');
   res.setHeader('Cache-Control', 'no-cache');
   res.setHeader('Connection', 'keep-alive');
-  
+
   // Handle streaming
   const cleanup = transport.handleStream(
     // Write function
@@ -97,7 +97,7 @@ app.get('/mcp', async (req, res) => {
       res.end();
     }
   );
-  
+
   // Handle client disconnect
   req.on('close', cleanup);
 });
@@ -131,13 +131,13 @@ app.get('/', (req, res) => {
     <body>
       <h1>MCP HTTP Streaming Example Server with n8n Integration</h1>
       <p>This is an MCP HTTP Streaming server example with complete n8n API workflow integration. The server exposes:</p>
-      
+
       <h2>Basic Resources</h2>
       <ul>
         <li>An <code>echo</code> tool that echoes back a message</li>
         <li>A <code>greeting</code> resource that provides a welcome message</li>
       </ul>
-      
+
       <h2>n8n Resources</h2>
       <table>
         <tr>
@@ -166,7 +166,7 @@ app.get('/', (req, res) => {
           <td><span class="method">GET</span> /tags</td>
         </tr>
       </table>
-      
+
       <h2>n8n Tools</h2>
       <table>
         <tr>
@@ -210,7 +210,7 @@ app.get('/', (req, res) => {
           <td><span class="method">PUT</span> /workflows/{id}/tags</td>
         </tr>
       </table>
-      
+
       <p>To interact with this server, you need an MCP client. The server is available at:</p>
       <pre>http://localhost:3000/mcp</pre>
     </body>
@@ -225,14 +225,14 @@ async function handleSessionRequest(req: express.Request, res: express.Response)
   if (!sessionId || !transports[sessionId]) {
     return res.status(400).json({ error: 'Invalid or missing session ID' });
   }
-  
+
   // Clean up the transport
   const transport = transports[sessionId];
   delete transports[sessionId];
-  
+
   // Close the transport
   await transport.close();
-  
+
   // Send a success response
   res.json({ success: true });
 }
