@@ -1,3 +1,4 @@
+import { jest, describe, test, expect, beforeEach } from '@jest/globals';
 import { N8nClient } from '../../api/n8nClient.js';
 import { N8nServiceV2 } from '../n8nServiceV2.js';
 import { Workflow, Tag } from '../../types/n8n.js';
@@ -49,27 +50,31 @@ describe('N8nServiceV2', () => {
     // Clear all mocks
     jest.clearAllMocks();
 
-    // Create a mock client
-    mockClient = new N8nClient('', '') as jest.Mocked<N8nClient>;
-    
-    // Set up the mock methods
-    mockClient.getWorkflows.mockResolvedValue(mockWorkflows);
-    mockClient.getWorkflow.mockResolvedValue(mockWorkflow);
-    mockClient.createWorkflow.mockResolvedValue({ ...mockWorkflow, id: 'new-workflow-id' });
-    mockClient.updateWorkflow.mockResolvedValue({ ...mockWorkflow, name: 'Updated Workflow' });
-    mockClient.deleteWorkflow.mockResolvedValue(mockWorkflow);
-    mockClient.activateWorkflow.mockResolvedValue({ ...mockWorkflow, active: true });
-    mockClient.deactivateWorkflow.mockResolvedValue({ ...mockWorkflow, active: false });
-    mockClient.getWorkflowTags.mockResolvedValue(mockTags);
-    mockClient.updateWorkflowTags.mockResolvedValue(mockTags);
-    mockClient.getTags.mockResolvedValue(mockTagsResponse);
-    mockClient.getTag.mockResolvedValue(mockTags[0]);
+    // Create a mock client with all methods as jest functions
+    mockClient = {
+      getWorkflows: jest.fn().mockResolvedValue(mockWorkflows),
+      getWorkflow: jest.fn().mockResolvedValue(mockWorkflow),
+      createWorkflow: jest.fn().mockResolvedValue({ ...mockWorkflow, id: 'new-workflow-id' }),
+      updateWorkflow: jest.fn().mockResolvedValue({ ...mockWorkflow, name: 'Updated Workflow' }),
+      deleteWorkflow: jest.fn().mockResolvedValue(mockWorkflow),
+      activateWorkflow: jest.fn().mockResolvedValue({ ...mockWorkflow, active: true }),
+      deactivateWorkflow: jest.fn().mockResolvedValue({ ...mockWorkflow, active: false }),
+      getWorkflowTags: jest.fn().mockResolvedValue(mockTags),
+      updateWorkflowTags: jest.fn().mockResolvedValue(mockTags),
+      getTags: jest.fn().mockResolvedValue(mockTagsResponse),
+      getTag: jest.fn().mockResolvedValue(mockTags[0]),
+      request: jest.fn(),
+      client: {} as any,
+    } as unknown as jest.Mocked<N8nClient>;
 
-    // Mock the constructor
-    (N8nClient as jest.Mock).mockImplementation(() => mockClient);
-
-    // Create the service
+    // Create the service and manually inject the mock client
     service = new N8nServiceV2('https://n8n.example.com/api/v1', 'test-api-key');
+
+    // Replace the client with our mock
+    Object.defineProperty(service, 'client', {
+      value: mockClient,
+      writable: true,
+    });
   });
 
   describe('Workflow operations', () => {
@@ -145,7 +150,7 @@ describe('N8nServiceV2', () => {
 
       const result = await service.updateWorkflowTags(workflowId, tagIds);
       expect(result).toEqual(mockTags);
-      expect(mockClient.updateWorkflowTags).toHaveBeenCalledWith(workflowId, { tagIds });
+      expect(mockClient.updateWorkflowTags).toHaveBeenCalledWith(workflowId, tagIds);
     });
   });
 
