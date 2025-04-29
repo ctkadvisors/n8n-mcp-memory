@@ -1,0 +1,11 @@
+#!/bin/sh
+
+# This is the Docker container version of the wrapper script
+# It is used by the main Dockerfile and copied to /app/mcp-wrapper.sh
+# This version is a simplified wrapper for use in the Docker container
+
+# Make the script executable
+chmod +x /app/mcp-bridge.js
+
+# Run the mcp-bridge.js script
+exec /app/mcp-bridge.js

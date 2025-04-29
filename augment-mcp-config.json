@@ -1,0 +1,22 @@
+{
+  "augment.advanced": {
+    "mcpServers": [
+      {
+        "name": "n8n-mcp-bridge",
+        "command": "docker",
+        "args": [
+          "run",
+          "-i",
+          "--rm",
+          "-p",
+          "3003:3000",
+          "-e",
+          "N8N_API_URL=https://your-n8n-instance.cloud/api/v1",
+          "-e",
+          "N8N_API_KEY=your-api-key-here",
+          "n8n-mcp-bridge"
+        ]
+      }
+    ]
+  }
+}

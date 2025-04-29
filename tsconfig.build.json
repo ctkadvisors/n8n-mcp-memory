@@ -1,0 +1,15 @@
+{
+  "extends": "./tsconfig.json",
+  "exclude": [
+    "src/api/generated/**/*",
+    "src/services/n8nService.ts",
+    "src/**/__tests__/**/*",
+    "src/__tests__/**/*",
+    "src/index.ts",
+    "src/indexV2.ts"
+  ],
+  "include": [
+    "src/**/*",
+    "src/server.ts"
+  ]
+}
