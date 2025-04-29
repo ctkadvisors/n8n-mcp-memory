@@ -1,5 +1,10 @@
 # MCP HTTP Streaming Server with n8n Integration
 
+[![CI](https://github.com/ctkadvisors/n8n-mcp-memory/actions/workflows/ci.yml/badge.svg)](https://github.com/ctkadvisors/n8n-mcp-memory/actions/workflows/ci.yml)
+[![Code Quality](https://github.com/ctkadvisors/n8n-mcp-memory/actions/workflows/code-quality.yml/badge.svg)](https://github.com/ctkadvisors/n8n-mcp-memory/actions/workflows/code-quality.yml)
+[![Security Scan](https://github.com/ctkadvisors/n8n-mcp-memory/actions/workflows/security.yml/badge.svg)](https://github.com/ctkadvisors/n8n-mcp-memory/actions/workflows/security.yml)
+[![Docker Build](https://github.com/ctkadvisors/n8n-mcp-memory/actions/workflows/docker.yml/badge.svg)](https://github.com/ctkadvisors/n8n-mcp-memory/actions/workflows/docker.yml)
+
 This project implements a Model Context Protocol (MCP) server using the HTTP Streaming transport with comprehensive n8n API integration. It provides access to all n8n API endpoints through the MCP protocol.
 
 ## Overview
@@ -201,17 +206,52 @@ You can test the server using:
 
 To run the tests:
 
-# Basic HTTP tests
+```bash
+# Run unit tests
+npm test
 
+# Run with coverage
+npm run test:coverage
+
+# Basic HTTP tests
 npm run test:http
 
 # Execution tests
-
 npm run test:execution
 
 # Credential tests
-
 npm run test:credential
+```
+
+### Code Quality
+
+We use ESLint and Prettier to maintain code quality:
+
+```bash
+# Run linting
+npm run lint
+
+# Fix linting issues
+npm run lint:fix
+
+# Check formatting
+npm run format:check
+
+# Fix formatting
+npm run format
+```
+
+### Continuous Integration
+
+This project uses GitHub Actions for continuous integration. The following workflows are configured:
+
+- **CI**: Builds and tests the project on multiple Node.js versions
+- **Code Quality**: Runs ESLint and Prettier checks
+- **Security Scan**: Performs security scanning with npm audit and GitHub CodeQL
+- **Dependency Review**: Analyzes dependencies for security vulnerabilities
+- **Docker**: Builds and publishes Docker images to GitHub Container Registry
+- **Documentation**: Generates and publishes documentation to GitHub Pages
+- **Release**: Automates the release process when version tags are pushed
 
 ## Integration with Claude Desktop/Cursor
 
