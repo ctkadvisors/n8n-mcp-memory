@@ -23,79 +23,18 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0 # Fetch all history for proper branch creation
-
-      - name: Install pnpm
-        uses: pnpm/action-setup@v3
-        with:
-          version: 8
-          run_install: false
 
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: 'pnpm'
 
-      - name: Install dependencies
-        run: pnpm install
-
-      - name: Generate documentation
+      - name: Create Documentation
         run: |
-          # Install TypeDoc and required dependencies
-          pnpm add typedoc typescript @types/node --save-dev
+          # Create docs directory structure
+          mkdir -p docs/api
 
-          # Create docs directory
-          mkdir -p docs
-
-          # List source files to check what we're working with
-          echo "Source files in src directory:"
-          find src -type f -name "*.ts" | sort || echo "No TypeScript files found in src directory"
-
-          # Try to generate documentation with more verbose output
-          echo "Running TypeDoc with verbose output..."
-          npx typedoc --out docs/api src/ --skipErrorChecking --logLevel Verbose || {
-            echo "TypeDoc failed, creating minimal documentation instead"
-
-            # Create a minimal API documentation structure
-            mkdir -p docs/api
-
-            # Create a simple API index.html
-            cat > docs/api/index.html << EOF
-            <!DOCTYPE html>
-            <html>
-            <head>
-              <meta charset="UTF-8">
-              <title>n8n Memory Control Panel API Documentation</title>
-              <style>
-                body { font-family: Arial, sans-serif; line-height: 1.6; padding: 20px; max-width: 800px; margin: 0 auto; }
-                h1 { color: #333; }
-                pre { background: #f4f4f4; padding: 10px; border-radius: 5px; overflow-x: auto; }
-              </style>
-            </head>
-            <body>
-              <h1>n8n Memory Control Panel API Documentation</h1>
-              <p>This is a placeholder for the API documentation. The automated documentation generation is currently being set up.</p>
-              <p>Please check back later for the full API documentation.</p>
-
-              <h2>Repository Structure</h2>
-              <pre>
-            EOF
-
-            # Add repository structure to the documentation
-            find . -type f -not -path "*/node_modules/*" -not -path "*/\.*" | sort >> docs/api/index.html
-
-            # Close the HTML file
-            cat >> docs/api/index.html << EOF
-              </pre>
-            </body>
-            </html>
-            EOF
-          }
-
-          # Create a simple index.html in the root docs directory
-          echo "Creating main index.html file"
+          # Create a simple index.html file
           cat > docs/index.html << EOF
           <!DOCTYPE html>
           <html>
@@ -110,11 +49,55 @@ jobs:
           </html>
           EOF
 
-          # Check what was generated
-          echo "Generated documentation structure:"
-          find docs -type f | sort || echo "No documentation files found"
+          # Create API documentation index
+          cat > docs/api/index.html << EOF
+          <!DOCTYPE html>
+          <html>
+          <head>
+            <meta charset="UTF-8">
+            <title>n8n Memory Control Panel API Documentation</title>
+            <style>
+              body { font-family: Arial, sans-serif; line-height: 1.6; padding: 20px; max-width: 800px; margin: 0 auto; }
+              h1, h2 { color: #333; }
+              pre { background: #f4f4f4; padding: 10px; border-radius: 5px; overflow-y: auto; max-height: 400px; }
+            </style>
+          </head>
+          <body>
+            <h1>n8n Memory Control Panel API Documentation</h1>
+            <p>This is a temporary documentation page. Full API documentation will be available soon.</p>
 
-      # Use JamesIves/github-pages-deploy-action instead of manual git commands
+            <h2>Repository Structure</h2>
+            <pre>
+          EOF
+
+          # Add TypeScript files to the documentation
+          find src -type f -name "*.ts" | sort >> docs/api/index.html
+
+          # Close the HTML file
+          cat >> docs/api/index.html << EOF
+            </pre>
+
+            <h2>Main Components</h2>
+            <ul>
+              <li><strong>API Client</strong>: Handles communication with n8n API</li>
+              <li><strong>MCP Tools</strong>: Provides high-level tools for managing n8n resources</li>
+              <li><strong>Documentation</strong>: Tools for fetching and managing n8n node documentation</li>
+            </ul>
+
+            <h2>Getting Started</h2>
+            <p>For more information, please refer to the <a href="https://github.com/ctkadvisors/n8n-mcp-memory" target="_blank">GitHub repository</a>.</p>
+          </body>
+          </html>
+          EOF
+
+          # Create .nojekyll file to disable Jekyll processing
+          touch docs/.nojekyll
+
+          # List generated files
+          echo "Generated documentation structure:"
+          find docs -type f | sort
+
+      # Use JamesIves/github-pages-deploy-action for deployment
       - name: Deploy to GitHub Pages
         uses: JamesIves/github-pages-deploy-action@v4
         with:
