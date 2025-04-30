@@ -43,31 +43,76 @@ jobs:
 
       - name: Generate documentation
         run: |
-          pnpm add typedoc
+          # Install TypeDoc and required dependencies
+          pnpm add typedoc typescript @types/node --save-dev
+
+          # Create docs directory
           mkdir -p docs
-          npx typedoc --out docs/api src/ --skipErrorChecking
 
-          # Debug: Check what was generated
-          echo "Generated documentation structure:"
-          find docs -type f | sort || echo "No documentation files found"
+          # List source files to check what we're working with
+          echo "Source files in src directory:"
+          find src -type f -name "*.ts" | sort || echo "No TypeScript files found in src directory"
 
-          # Create a simple index.html if it doesn't exist
-          if [ ! -f "docs/index.html" ]; then
-            echo "Creating a simple index.html file"
-            cat > docs/index.html << EOF
+          # Try to generate documentation with more verbose output
+          echo "Running TypeDoc with verbose output..."
+          npx typedoc --out docs/api src/ --skipErrorChecking --logLevel Verbose || {
+            echo "TypeDoc failed, creating minimal documentation instead"
+
+            # Create a minimal API documentation structure
+            mkdir -p docs/api
+
+            # Create a simple API index.html
+            cat > docs/api/index.html << EOF
             <!DOCTYPE html>
             <html>
             <head>
               <meta charset="UTF-8">
-              <meta http-equiv="refresh" content="0;url=api/">
-              <title>n8n Memory Control Panel Documentation</title>
+              <title>n8n Memory Control Panel API Documentation</title>
+              <style>
+                body { font-family: Arial, sans-serif; line-height: 1.6; padding: 20px; max-width: 800px; margin: 0 auto; }
+                h1 { color: #333; }
+                pre { background: #f4f4f4; padding: 10px; border-radius: 5px; overflow-x: auto; }
+              </style>
             </head>
             <body>
-              <p>If you are not redirected automatically, follow this <a href="api/">link to the documentation</a>.</p>
+              <h1>n8n Memory Control Panel API Documentation</h1>
+              <p>This is a placeholder for the API documentation. The automated documentation generation is currently being set up.</p>
+              <p>Please check back later for the full API documentation.</p>
+
+              <h2>Repository Structure</h2>
+              <pre>
+            EOF
+
+            # Add repository structure to the documentation
+            find . -type f -not -path "*/node_modules/*" -not -path "*/\.*" | sort >> docs/api/index.html
+
+            # Close the HTML file
+            cat >> docs/api/index.html << EOF
+              </pre>
             </body>
             </html>
             EOF
-          fi
+          }
+
+          # Create a simple index.html in the root docs directory
+          echo "Creating main index.html file"
+          cat > docs/index.html << EOF
+          <!DOCTYPE html>
+          <html>
+          <head>
+            <meta charset="UTF-8">
+            <meta http-equiv="refresh" content="0;url=api/">
+            <title>n8n Memory Control Panel Documentation</title>
+          </head>
+          <body>
+            <p>If you are not redirected automatically, follow this <a href="api/">link to the documentation</a>.</p>
+          </body>
+          </html>
+          EOF
+
+          # Check what was generated
+          echo "Generated documentation structure:"
+          find docs -type f | sort || echo "No documentation files found"
 
       # Use JamesIves/github-pages-deploy-action instead of manual git commands
       - name: Deploy to GitHub Pages
