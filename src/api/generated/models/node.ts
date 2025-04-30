@@ -2,5 +2,5 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-import type { node } from './node';
+import type { node } from './node.js';
 export type Node = node;

@@ -2,5 +2,5 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-import type { execution } from './execution';
+import type { execution } from './execution.js';
 export type Execution = execution;

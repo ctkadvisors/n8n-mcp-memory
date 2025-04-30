@@ -2,5 +2,5 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-import type { importResult } from './importResult';
+import type { importResult } from './importResult.js';
 export type ImportResult = importResult;

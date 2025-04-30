@@ -66,7 +66,7 @@ export default tseslint.config(
     },
   },
   {
-    // Ignore generated files
-    ignores: ['dist/**', 'node_modules/**', 'src/api/generated/**', 'coverage/**'],
+    // Ignore generated files and documentation
+    ignores: ['dist/**', 'node_modules/**', 'src/api/generated/**', 'coverage/**', 'docs/**'],
   }
 );

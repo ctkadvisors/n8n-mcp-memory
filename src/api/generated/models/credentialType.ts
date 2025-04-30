@@ -2,5 +2,5 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-import type { credentialType } from './credentialType';
+import type { credentialType } from './credentialType.js';
 export type CredentialType = credentialType;

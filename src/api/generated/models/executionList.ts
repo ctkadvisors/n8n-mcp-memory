@@ -2,5 +2,5 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-import type { executionList } from './executionList';
+import type { executionList } from './executionList.js';
 export type ExecutionList = executionList;

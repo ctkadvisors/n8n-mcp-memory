@@ -2,12 +2,11 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-import type { project } from './project';
+import type { project } from './project.js';
 export type projectList = {
-    data?: Array<project>;
-    /**
-     * Paginate through projects by setting the cursor parameter to a nextCursor attribute returned by a previous request. Default value fetches the first "page" of the collection.
-     */
-    nextCursor?: string | null;
+  data?: Array<project>;
+  /**
+   * Paginate through projects by setting the cursor parameter to a nextCursor attribute returned by a previous request. Default value fetches the first "page" of the collection.
+   */
+  nextCursor?: string | null;
 };
-

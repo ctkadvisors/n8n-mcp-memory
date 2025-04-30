@@ -2,5 +2,5 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-import type { tag } from './tag';
+import type { tag } from './tag.js';
 export type workflowTags = Array<tag>;

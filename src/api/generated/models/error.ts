@@ -2,5 +2,5 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-import type { error } from './error';
+import type { error } from './error.js';
 export type Error = error;

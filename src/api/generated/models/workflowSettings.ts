@@ -2,5 +2,5 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-import type { workflowSettings } from './workflowSettings';
+import type { workflowSettings } from './workflowSettings.js';
 export type WorkflowSettings = workflowSettings;

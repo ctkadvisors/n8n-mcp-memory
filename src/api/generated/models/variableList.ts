@@ -2,12 +2,11 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-import type { variable } from './variable';
+import type { variable } from './variable.js';
 export type variableList = {
-    data?: Array<variable>;
-    /**
-     * Paginate through variables by setting the cursor parameter to a nextCursor attribute returned by a previous request. Default value fetches the first "page" of the collection.
-     */
-    nextCursor?: string | null;
+  data?: Array<variable>;
+  /**
+   * Paginate through variables by setting the cursor parameter to a nextCursor attribute returned by a previous request. Default value fetches the first "page" of the collection.
+   */
+  nextCursor?: string | null;
 };
-

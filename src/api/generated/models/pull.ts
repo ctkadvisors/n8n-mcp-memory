@@ -2,5 +2,5 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-import type { pull } from './pull';
+import type { pull } from './pull.js';
 export type Pull = pull;

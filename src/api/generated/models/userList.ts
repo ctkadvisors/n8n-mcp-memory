@@ -2,5 +2,5 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-import type { userList } from './userList';
+import type { userList } from './userList.js';
 export type UserList = userList;
