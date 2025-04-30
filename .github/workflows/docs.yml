@@ -42,18 +42,47 @@ jobs:
       - name: Generate documentation
         run: |
           pnpm add typedoc
+          mkdir -p docs
           npx typedoc --out docs/api src/ --skipErrorChecking
+
+          # Debug: Check what was generated
+          echo "Generated documentation structure:"
+          find docs -type f | sort
 
       # Deploy directly to gh-pages branch
       - name: Deploy to GitHub Pages
         run: |
           git config --global user.name "GitHub Actions"
           git config --global user.email "actions@github.com"
+
+          # Debug: List directory contents to see what's available
+          echo "Current directory contents:"
+          ls -la
+          echo "Docs directory contents:"
+          ls -la docs || echo "docs directory not found"
+
+          # Create gh-pages branch
           git checkout --orphan gh-pages
           git reset --hard
-          cp -r docs/* .
-          rm -rf docs
+
+          # Check if docs directory exists and has content
+          if [ -d "docs" ] && [ "$(ls -A docs)" ]; then
+            echo "Copying docs directory contents..."
+            cp -r docs/* .
+            rm -rf docs
+          else
+            echo "docs directory not found or empty, copying docs/api if it exists"
+            mkdir -p temp_docs
+            [ -d "docs/api" ] && cp -r docs/api/* temp_docs/
+            cp -r temp_docs/* .
+            rm -rf temp_docs
+          fi
+
+          # Create .nojekyll file to disable Jekyll processing
           touch .nojekyll
+
+          # Commit and push
           git add .
+          git status
           git commit -m "Deploy documentation to GitHub Pages"
           git push -f origin gh-pages
