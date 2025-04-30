@@ -30,7 +30,7 @@ This server implements:
 
 ### Documentation
 
-API documentation is available at [https://ctkadvisors.github.io/n8n-mcp-memory/](https://ctkadvisors.github.io/n8n-mcp-memory/) (generated automatically from source code using TypeDoc)
+API documentation is available at [https://ctkadvisors.github.io/n8n-mcp-memory/](https://ctkadvisors.github.io/n8n-mcp-memory/) (generated automatically from source code using TypeDoc and deployed via GitHub Actions)
 
 ### Docker Image
 
