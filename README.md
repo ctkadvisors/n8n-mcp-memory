@@ -26,6 +26,22 @@ This server implements:
   - Source control integration (pull)
   - Security audit generation
 
+## Resources
+
+### Documentation
+
+API documentation is available at [https://ctkadvisors.github.io/n8n-mcp-memory/](https://ctkadvisors.github.io/n8n-mcp-memory/)
+
+### Docker Image
+
+The Docker image is available at [ghcr.io/ctkadvisors/n8n-mcp-memory](https://github.com/ctkadvisors/n8n-mcp-memory/pkgs/container/n8n-mcp-memory)
+
+You can pull it using:
+
+```bash
+docker pull ghcr.io/ctkadvisors/n8n-mcp-memory:main
+```
+
 ## Getting Started
 
 ### Prerequisites
@@ -67,9 +83,9 @@ You can visit http://localhost:3000 to see the available resources and tools.
 
 Build and run the Docker container:
 
-# Build the Docker image
+# Pull the Docker image from GitHub Container Registry
 
-docker build -t n8n-mcp .
+docker pull ghcr.io/ctkadvisors/n8n-mcp-memory:main
 
 # Run the container with environment variables
 
@@ -77,7 +93,11 @@ docker run -p 3000:3000 \
  -e N8N_API_URL=https://your-n8n-instance.com/api/v1 \
  -e N8N_API_KEY=your-n8n-api-key \
  -v n8n_mcp_cache:/app/cache \
- n8n-mcp
+ ghcr.io/ctkadvisors/n8n-mcp-memory:main
+
+# Alternatively, build the Docker image locally
+
+# docker build -t n8n-mcp .
 
 Or using Docker Compose:
 

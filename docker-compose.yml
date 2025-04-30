@@ -2,7 +2,9 @@ version: '3'
 
 services:
   n8n-mcp:
-    build: .
+    image: ghcr.io/ctkadvisors/n8n-mcp-memory:main
+    # Alternatively, build locally:
+    # build: .
     ports:
       - "3000:3000"
     environment:
@@ -10,3 +12,8 @@ services:
       - N8N_API_URL=${N8N_API_URL}
       - N8N_API_KEY=${N8N_API_KEY}
     restart: unless-stopped
+    volumes:
+      - n8n_mcp_cache:/app/cache
+
+volumes:
+  n8n_mcp_cache:
