@@ -23,6 +23,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Fetch all history for proper branch creation
 
       - name: Install pnpm
         uses: pnpm/action-setup@v3
@@ -47,42 +49,30 @@ jobs:
 
           # Debug: Check what was generated
           echo "Generated documentation structure:"
-          find docs -type f | sort
+          find docs -type f | sort || echo "No documentation files found"
 
-      # Deploy directly to gh-pages branch
-      - name: Deploy to GitHub Pages
-        run: |
-          git config --global user.name "GitHub Actions"
-          git config --global user.email "actions@github.com"
-
-          # Debug: List directory contents to see what's available
-          echo "Current directory contents:"
-          ls -la
-          echo "Docs directory contents:"
-          ls -la docs || echo "docs directory not found"
-
-          # Create gh-pages branch
-          git checkout --orphan gh-pages
-          git reset --hard
-
-          # Check if docs directory exists and has content
-          if [ -d "docs" ] && [ "$(ls -A docs)" ]; then
-            echo "Copying docs directory contents..."
-            cp -r docs/* .
-            rm -rf docs
-          else
-            echo "docs directory not found or empty, copying docs/api if it exists"
-            mkdir -p temp_docs
-            [ -d "docs/api" ] && cp -r docs/api/* temp_docs/
-            cp -r temp_docs/* .
-            rm -rf temp_docs
+          # Create a simple index.html if it doesn't exist
+          if [ ! -f "docs/index.html" ]; then
+            echo "Creating a simple index.html file"
+            cat > docs/index.html << EOF
+            <!DOCTYPE html>
+            <html>
+            <head>
+              <meta charset="UTF-8">
+              <meta http-equiv="refresh" content="0;url=api/">
+              <title>n8n Memory Control Panel Documentation</title>
+            </head>
+            <body>
+              <p>If you are not redirected automatically, follow this <a href="api/">link to the documentation</a>.</p>
+            </body>
+            </html>
+            EOF
           fi
 
-          # Create .nojekyll file to disable Jekyll processing
-          touch .nojekyll
-
-          # Commit and push
-          git add .
-          git status
-          git commit -m "Deploy documentation to GitHub Pages"
-          git push -f origin gh-pages
+      # Use JamesIves/github-pages-deploy-action instead of manual git commands
+      - name: Deploy to GitHub Pages
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: docs
+          branch: gh-pages
+          clean: true
