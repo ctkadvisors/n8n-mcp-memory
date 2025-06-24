@@ -1,6 +1,6 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { z } from 'zod';
-import { n8nServiceV2 } from '../../services/n8nServiceV2.js';
+import { n8nService } from '../../services/n8nService.js';
 import { formatError } from '../../utils/errorHandling.js';
 
 // Define schemas for workflow-related operations
@@ -60,7 +60,7 @@ export function registerWorkflowTools(server: McpServer): void {
     },
     async (args) => {
       try {
-        const result = await n8nServiceV2.getWorkflows(args || {});
+        const result = await n8nService.getWorkflows(args || {});
 
         // Format the workflow data for better readability
         const formattedWorkflows = result.data.map((workflow) => ({
@@ -113,7 +113,7 @@ export function registerWorkflowTools(server: McpServer): void {
     async (args) => {
       try {
         const { workflowId, excludePinnedData } = args;
-        const workflow = await n8nServiceV2.getWorkflow(workflowId, excludePinnedData);
+        const workflow = await n8nService.getWorkflow(workflowId, excludePinnedData);
 
         // Format the workflow data for better readability
         const formattedWorkflow = {
@@ -321,7 +321,7 @@ Notes:
           )
         );
 
-        const result = await n8nServiceV2.createWorkflow(workflow);
+        const result = await n8nService.createWorkflow(workflow);
         return {
           content: [
             {
@@ -474,7 +474,7 @@ Note: Do not include properties like "callerPolicy" or other non-standard proper
         try {
           // First attempt
           console.log(`Attempting to update workflow ${workflowId} (first attempt)`);
-          const result = await n8nServiceV2.updateWorkflow(workflowId, workflow);
+          const result = await n8nService.updateWorkflow(workflowId, workflow);
 
           return {
             content: [
@@ -503,7 +503,7 @@ Note: Do not include properties like "callerPolicy" or other non-standard proper
 
               // Second attempt
               console.log(`Attempting to update workflow ${workflowId} (second attempt)`);
-              const result = await n8nServiceV2.updateWorkflow(workflowId, workflow);
+              const result = await n8nService.updateWorkflow(workflowId, workflow);
 
               return {
                 content: [
@@ -524,7 +524,7 @@ Note: Do not include properties like "callerPolicy" or other non-standard proper
                 );
                 await new Promise((resolve) => setTimeout(resolve, 1000));
 
-                const checkResult = await n8nServiceV2.getWorkflow(workflowId);
+                const checkResult = await n8nService.getWorkflow(workflowId);
 
                 // Compare some key properties to see if the update took effect
                 if (checkResult.name === workflow.name) {
@@ -595,7 +595,7 @@ Note: Do not include properties like "callerPolicy" or other non-standard proper
         console.log(`Attempting to delete workflow ${workflowId}`);
 
         try {
-          const result = await n8nServiceV2.deleteWorkflow(workflowId);
+          const result = await n8nService.deleteWorkflow(workflowId);
           return {
             content: [
               {
@@ -619,7 +619,7 @@ Note: Do not include properties like "callerPolicy" or other non-standard proper
             await new Promise((resolve) => setTimeout(resolve, 2000));
 
             // Second attempt with longer timeout
-            const result = await n8nServiceV2.deleteWorkflow(workflowId);
+            const result = await n8nService.deleteWorkflow(workflowId);
             return {
               content: [
                 {
@@ -660,7 +660,7 @@ Note: Do not include properties like "callerPolicy" or other non-standard proper
     async (args) => {
       try {
         const { workflowId } = args;
-        const result = await n8nServiceV2.activateWorkflow(workflowId);
+        const result = await n8nService.activateWorkflow(workflowId);
         return {
           content: [
             {
@@ -697,7 +697,7 @@ Note: Do not include properties like "callerPolicy" or other non-standard proper
     async (args) => {
       try {
         const { workflowId } = args;
-        const result = await n8nServiceV2.deactivateWorkflow(workflowId);
+        const result = await n8nService.deactivateWorkflow(workflowId);
         return {
           content: [
             {
@@ -732,7 +732,7 @@ Note: Do not include properties like "callerPolicy" or other non-standard proper
     async (args) => {
       try {
         const { workflowId, destinationProjectId } = args;
-        const result = await n8nServiceV2.transferWorkflow(workflowId, destinationProjectId);
+        const result = await n8nService.transferWorkflow(workflowId, destinationProjectId);
         return {
           content: [
             {
@@ -767,7 +767,7 @@ Note: Do not include properties like "callerPolicy" or other non-standard proper
     async (args) => {
       try {
         const { workflowId, tagIds } = args;
-        const result = await n8nServiceV2.updateWorkflowTags(workflowId, tagIds);
+        const result = await n8nService.updateWorkflowTags(workflowId, tagIds);
         return {
           content: [
             {

@@ -4,10 +4,24 @@ import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/
 import { isInitializeRequest } from '@modelcontextprotocol/sdk/types.js';
 import env from './utils/env.js';
 import { registerN8nIntegration } from './mcp/n8nIntegration.js';
+import { createOpenAPIRoutes, createRestAPIRoutes } from './openapi/routes.js';
 
 // Create Express app
 const app = express();
 app.use(express.json());
+
+// Enable CORS for OpenAPI endpoints
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-API-Key');
+
+  if (req.method === 'OPTIONS') {
+    res.sendStatus(200);
+  } else {
+    next();
+  }
+});
 
 // Map to store transports by session ID
 const transports: { [sessionId: string]: StreamableHTTPServerTransport } = {};
@@ -30,6 +44,12 @@ mcpServer.resource('greeting', 'greeting://hello', async (uri: URL) => ({
 
 // Register n8n integration
 registerN8nIntegration(mcpServer);
+
+// Add OpenAPI routes
+const PORT = process.env.PORT || 3000;
+const baseUrl = `http://localhost:${PORT}`;
+app.use('/api', createOpenAPIRoutes(mcpServer, baseUrl));
+app.use('/api', createRestAPIRoutes(mcpServer));
 
 // Handle POST requests for client-to-server communication
 app.post('/mcp', async (req, res) => {
@@ -153,6 +173,23 @@ app.get('/', (_, res) => {
     <body>
       <h1>MCP HTTP Streaming Example Server with n8n Integration</h1>
       <p>This is an MCP HTTP Streaming server example with complete n8n API workflow integration. The server exposes:</p>
+
+      <h2>API Documentation</h2>
+      <ul>
+        <li><a href="/api/docs" target="_blank">📖 Interactive API Documentation (Swagger UI)</a></li>
+        <li><a href="/api/openapi.json" target="_blank">📄 OpenAPI Specification (JSON)</a></li>
+        <li><a href="/api/openapi.yaml" target="_blank">📄 OpenAPI Specification (YAML)</a></li>
+        <li><a href="/api/capabilities" target="_blank">⚙️ Server Capabilities</a></li>
+        <li><a href="/api/health" target="_blank">💚 Health Check</a></li>
+      </ul>
+
+      <h2>REST API Endpoints</h2>
+      <ul>
+        <li><strong>Tools:</strong> <code>POST /api/tools/{toolName}</code> - Execute MCP tools via REST API</li>
+        <li><strong>Resources:</strong> <code>GET /api/resources/{resourceName}</code> - Get MCP resources via REST API</li>
+        <li><strong>List Tools:</strong> <code>GET /api/tools</code> - List all available tools</li>
+        <li><strong>List Resources:</strong> <code>GET /api/resources</code> - List all available resources</li>
+      </ul>
 
       <h2>Basic Resources</h2>
       <ul>
@@ -375,9 +412,10 @@ app.get('/', (_, res) => {
 });
 
 // Start the server
-const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`MCP HTTP Streaming Server with n8n Integration listening on port ${PORT}`);
   console.log(`Visit http://localhost:${PORT} for more information`);
+  console.log(`OpenAPI Documentation: http://localhost:${PORT}/api/docs`);
+  console.log(`OpenAPI Specification: http://localhost:${PORT}/api/openapi.json`);
   console.log(`Using n8n API URL: ${env.N8N_API_URL}`);
 });

@@ -1,6 +1,6 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { z } from 'zod';
-import { n8nServiceV2 } from '../../services/n8nServiceV2.js';
+import { n8nService } from '../../services/n8nService.js';
 import { formatError } from '../../utils/errorHandling.js';
 
 // Define schemas for execution-related operations
@@ -35,7 +35,7 @@ export function registerExecutionTools(server: McpServer): void {
     async (args) => {
       try {
         const { executionId } = args;
-        const result = await n8nServiceV2.deleteExecution(executionId);
+        const result = await n8nService.deleteExecution(executionId);
         return {
           content: [
             {
@@ -75,7 +75,7 @@ export function registerExecutionTools(server: McpServer): void {
         // Convert params to WorkflowExecuteParams
         const executeParams: any = params || {};
 
-        const result = await n8nServiceV2.executeWorkflow(workflowId, executeParams);
+        const result = await n8nService.executeWorkflow(workflowId, executeParams);
         return {
           content: [
             {

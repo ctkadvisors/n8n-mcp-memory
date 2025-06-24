@@ -1,6 +1,6 @@
 import { jest, describe, test, expect, beforeEach } from '@jest/globals';
 import { N8nClient } from '../../api/n8nClient.js';
-import { N8nServiceV2 } from '../n8nServiceV2.js';
+import { N8nServiceV2 } from '../n8nService.js';
 import { Workflow, Tag } from '../../types/n8n.js';
 
 // Mock the N8nClient

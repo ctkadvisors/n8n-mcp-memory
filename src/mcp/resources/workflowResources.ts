@@ -1,5 +1,5 @@
 import { McpServer, ResourceTemplate } from '@modelcontextprotocol/sdk/server/mcp.js';
-import { n8nServiceV2 } from '../../services/n8nServiceV2.js';
+import { n8nService } from '../../services/n8nService.js';
 
 /**
  * Register workflow-related resources with the MCP server
@@ -16,7 +16,7 @@ export function registerWorkflowResources(server: McpServer): void {
     },
     async (uri) => {
       try {
-        const workflows = await n8nServiceV2.getWorkflows();
+        const workflows = await n8nService.getWorkflows();
         return {
           contents: [
             {
@@ -54,7 +54,7 @@ export function registerWorkflowResources(server: McpServer): void {
       try {
         // Ensure workflowId is a string
         const id = Array.isArray(workflowId) ? workflowId[0] : workflowId;
-        const workflow = await n8nServiceV2.getWorkflow(id);
+        const workflow = await n8nService.getWorkflow(id);
         return {
           contents: [
             {
@@ -94,7 +94,7 @@ export function registerWorkflowResources(server: McpServer): void {
       try {
         // Ensure workflowId is a string
         const id = Array.isArray(workflowId) ? workflowId[0] : workflowId;
-        const tags = await n8nServiceV2.getWorkflowTags(id);
+        const tags = await n8nService.getWorkflowTags(id);
         return {
           contents: [
             {

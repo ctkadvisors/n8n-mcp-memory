@@ -1,10 +1,10 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { registerTagResources } from '../tagResources.js';
-import { n8nServiceV2 } from '../../../services/n8nServiceV2.js';
+import { n8nService } from '../../../services/n8nService.js';
 
-// Mock the n8nServiceV2
-jest.mock('../../../services/n8nServiceV2.js', () => ({
-  n8nServiceV2: {
+// Mock the n8nService
+jest.mock('../../../services/n8nService.js', () => ({
+  n8nService: {
     getTags: jest.fn(),
   },
 }));
@@ -28,23 +28,23 @@ describe('tagResources', () => {
     // Reset mocks
     jest.clearAllMocks();
 
-    // Mock the n8nServiceV2 methods
-    (n8nServiceV2.getTags as jest.Mock).mockResolvedValue(mockTags);
+    // Mock the n8nService methods
+    (n8nService.getTags as jest.Mock).mockResolvedValue(mockTags);
 
     // Create a mock server
     server = {
       resource: jest.fn((name, uriOrTemplate, handler) => {
         if (!resourceHandlers) resourceHandlers = new Map();
         if (!resourceTemplates) resourceTemplates = new Map();
-        
+
         resourceHandlers.set(name, handler);
-        
+
         if (typeof uriOrTemplate === 'string') {
           resourceTemplates.set(name, uriOrTemplate);
         } else {
           resourceTemplates.set(name, uriOrTemplate.template);
         }
-        
+
         return { name };
       }),
     } as unknown as McpServer;
@@ -62,10 +62,10 @@ describe('tagResources', () => {
   test('n8nTags resource should return tags', async () => {
     const handler = resourceHandlers.get('n8nTags');
     const uri = { href: 'n8n://tags' };
-    
+
     const result = await handler(uri);
-    
-    expect(n8nServiceV2.getTags).toHaveBeenCalled();
+
+    expect(n8nService.getTags).toHaveBeenCalled();
     expect(result).toEqual({
       contents: [
         {
@@ -80,11 +80,11 @@ describe('tagResources', () => {
     const handler = resourceHandlers.get('n8nTags');
     const uri = { href: 'n8n://tags' };
     const error = new Error('API error');
-    
-    (n8nServiceV2.getTags as jest.Mock).mockRejectedValue(error);
-    
+
+    (n8nService.getTags as jest.Mock).mockRejectedValue(error);
+
     const result = await handler(uri);
-    
+
     expect(result).toEqual({
       contents: [
         {

@@ -1,6 +1,6 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { z } from 'zod';
-import { n8nServiceV2 } from '../../services/n8nServiceV2.js';
+import { n8nService } from '../../services/n8nService.js';
 import { formatError } from '../../utils/errorHandling.js';
 
 // Define schemas for variable-related operations
@@ -26,7 +26,7 @@ export function registerVariableTools(server: McpServer): void {
     async (args) => {
       try {
         const { key, value } = args;
-        await n8nServiceV2.createVariable({ key, value });
+        await n8nService.createVariable({ key, value });
         return {
           content: [
             {
@@ -62,7 +62,7 @@ export function registerVariableTools(server: McpServer): void {
     async (args) => {
       try {
         const { variableId } = args;
-        await n8nServiceV2.deleteVariable(variableId);
+        await n8nService.deleteVariable(variableId);
         return {
           content: [
             {

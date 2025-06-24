@@ -1,10 +1,10 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { registerWorkflowTools } from '../workflowTools.js';
-import { n8nServiceV2 } from '../../../services/n8nServiceV2.js';
+import { n8nService } from '../../../services/n8nService.js';
 
-// Mock the n8nServiceV2
-jest.mock('../../../services/n8nServiceV2.js', () => ({
-  n8nServiceV2: {
+// Mock the n8nService
+jest.mock('../../../services/n8nService.js', () => ({
+  n8nService: {
     createWorkflow: jest.fn(),
     updateWorkflow: jest.fn(),
     deleteWorkflow: jest.fn(),
@@ -40,24 +40,33 @@ describe('workflowTools', () => {
     // Reset mocks
     jest.clearAllMocks();
 
-    // Mock the n8nServiceV2 methods
-    (n8nServiceV2.createWorkflow as jest.Mock).mockResolvedValue({ ...mockWorkflow, id: 'new-workflow-id' });
-    (n8nServiceV2.updateWorkflow as jest.Mock).mockResolvedValue({ ...mockWorkflow, name: 'Updated Workflow' });
-    (n8nServiceV2.deleteWorkflow as jest.Mock).mockResolvedValue(mockWorkflow);
-    (n8nServiceV2.activateWorkflow as jest.Mock).mockResolvedValue({ ...mockWorkflow, active: true });
-    (n8nServiceV2.deactivateWorkflow as jest.Mock).mockResolvedValue({ ...mockWorkflow, active: false });
-    (n8nServiceV2.transferWorkflow as jest.Mock).mockResolvedValue({ success: true });
-    (n8nServiceV2.updateWorkflowTags as jest.Mock).mockResolvedValue(mockTags);
+    // Mock the n8nService methods
+    (n8nService.createWorkflow as jest.Mock).mockResolvedValue({
+      ...mockWorkflow,
+      id: 'new-workflow-id',
+    });
+    (n8nService.updateWorkflow as jest.Mock).mockResolvedValue({
+      ...mockWorkflow,
+      name: 'Updated Workflow',
+    });
+    (n8nService.deleteWorkflow as jest.Mock).mockResolvedValue(mockWorkflow);
+    (n8nService.activateWorkflow as jest.Mock).mockResolvedValue({ ...mockWorkflow, active: true });
+    (n8nService.deactivateWorkflow as jest.Mock).mockResolvedValue({
+      ...mockWorkflow,
+      active: false,
+    });
+    (n8nService.transferWorkflow as jest.Mock).mockResolvedValue({ success: true });
+    (n8nService.updateWorkflowTags as jest.Mock).mockResolvedValue(mockTags);
 
     // Create a mock server
     server = {
       tool: jest.fn((name, schema, handler) => {
         if (!toolHandlers) toolHandlers = new Map();
         if (!toolSchemas) toolSchemas = new Map();
-        
+
         toolHandlers.set(name, handler);
         toolSchemas.set(name, schema);
-        
+
         return { name };
       }),
     } as unknown as McpServer;
@@ -85,10 +94,10 @@ describe('workflowTools', () => {
       connections: {},
       settings: {},
     };
-    
+
     const result = await handler(args);
-    
-    expect(n8nServiceV2.createWorkflow).toHaveBeenCalledWith(args);
+
+    expect(n8nService.createWorkflow).toHaveBeenCalledWith(args);
     expect(result).toEqual({
       content: [
         {
@@ -111,10 +120,10 @@ describe('workflowTools', () => {
         settings: {},
       },
     };
-    
+
     const result = await handler(args);
-    
-    expect(n8nServiceV2.updateWorkflow).toHaveBeenCalledWith('workflow1', args.workflowData);
+
+    expect(n8nService.updateWorkflow).toHaveBeenCalledWith('workflow1', args.workflowData);
     expect(result).toEqual({
       content: [
         {
@@ -131,10 +140,10 @@ describe('workflowTools', () => {
     const args = {
       workflowId: 'workflow1',
     };
-    
+
     const result = await handler(args);
-    
-    expect(n8nServiceV2.deleteWorkflow).toHaveBeenCalledWith('workflow1');
+
+    expect(n8nService.deleteWorkflow).toHaveBeenCalledWith('workflow1');
     expect(result).toEqual({
       content: [
         {
@@ -151,10 +160,10 @@ describe('workflowTools', () => {
     const args = {
       workflowId: 'workflow1',
     };
-    
+
     const result = await handler(args);
-    
-    expect(n8nServiceV2.activateWorkflow).toHaveBeenCalledWith('workflow1');
+
+    expect(n8nService.activateWorkflow).toHaveBeenCalledWith('workflow1');
     expect(result).toEqual({
       content: [
         {
@@ -171,10 +180,10 @@ describe('workflowTools', () => {
     const args = {
       workflowId: 'workflow1',
     };
-    
+
     const result = await handler(args);
-    
-    expect(n8nServiceV2.deactivateWorkflow).toHaveBeenCalledWith('workflow1');
+
+    expect(n8nService.deactivateWorkflow).toHaveBeenCalledWith('workflow1');
     expect(result).toEqual({
       content: [
         {
@@ -192,10 +201,10 @@ describe('workflowTools', () => {
       workflowId: 'workflow1',
       destinationProjectId: 'project1',
     };
-    
+
     const result = await handler(args);
-    
-    expect(n8nServiceV2.transferWorkflow).toHaveBeenCalledWith('workflow1', 'project1');
+
+    expect(n8nService.transferWorkflow).toHaveBeenCalledWith('workflow1', 'project1');
     expect(result).toEqual({
       content: [
         {
@@ -213,10 +222,10 @@ describe('workflowTools', () => {
       workflowId: 'workflow1',
       tagIds: [{ id: 'tag1' }],
     };
-    
+
     const result = await handler(args);
-    
-    expect(n8nServiceV2.updateWorkflowTags).toHaveBeenCalledWith('workflow1', args.tagIds);
+
+    expect(n8nService.updateWorkflowTags).toHaveBeenCalledWith('workflow1', args.tagIds);
     expect(result).toEqual({
       content: [
         {
@@ -237,11 +246,11 @@ describe('workflowTools', () => {
       settings: {},
     };
     const error = new Error('API error');
-    
-    (n8nServiceV2.createWorkflow as jest.Mock).mockRejectedValue(error);
-    
+
+    (n8nService.createWorkflow as jest.Mock).mockRejectedValue(error);
+
     const result = await handler(args);
-    
+
     expect(result).toEqual({
       content: [
         {

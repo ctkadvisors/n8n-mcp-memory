@@ -1,6 +1,6 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { z } from 'zod';
-import { n8nServiceV2 } from '../../services/n8nServiceV2.js';
+import { n8nService } from '../../services/n8nService.js';
 
 // Define schemas for audit operations
 const auditSchema = {
@@ -23,7 +23,7 @@ export function registerAuditTools(server: McpServer): void {
     async (args) => {
       try {
         const { daysAbandonedWorkflow, categories } = args;
-        const result = await n8nServiceV2.generateAudit({
+        const result = await n8nService.generateAudit({
           additionalOptions: {
             daysAbandonedWorkflow,
             categories,

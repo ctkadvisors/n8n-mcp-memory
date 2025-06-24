@@ -1,5 +1,5 @@
 import { McpServer, ResourceTemplate } from '@modelcontextprotocol/sdk/server/mcp.js';
-import { n8nServiceV2 } from '../../services/n8nServiceV2.js';
+import { n8nService } from '../../services/n8nService.js';
 
 /**
  * Register project-related resources with the MCP server
@@ -25,7 +25,7 @@ export function registerProjectResources(server: McpServer): void {
           cursor: url.searchParams.get('cursor') || undefined,
         };
 
-        const projects = await n8nServiceV2.getProjects(params);
+        const projects = await n8nService.getProjects(params);
         return {
           contents: [
             {

@@ -1,5 +1,5 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
-import { n8nServiceV2 } from '../../services/n8nServiceV2.js';
+import { n8nService } from '../../services/n8nService.js';
 
 /**
  * Register tag-related resources with the MCP server
@@ -16,7 +16,7 @@ export function registerTagResources(server: McpServer): void {
     },
     async (uri) => {
       try {
-        const tags = await n8nServiceV2.getTags();
+        const tags = await n8nService.getTags();
         return {
           contents: [
             {
