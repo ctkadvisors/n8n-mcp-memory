@@ -1,6 +1,6 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { z } from 'zod';
-import { n8nService } from '../../services/n8nService.js';
+import { n8nServiceV2 } from '../../services/n8nServiceV2.js';
 import { formatError } from '../../utils/errorHandling.js';
 
 // Define schemas for project-related operations
@@ -30,7 +30,7 @@ export function registerProjectTools(server: McpServer): void {
     async (args) => {
       try {
         const { name } = args;
-        const result = await n8nService.createProject({ name });
+        const result = await n8nServiceV2.createProject({ name });
         return {
           content: [
             {
@@ -67,7 +67,7 @@ export function registerProjectTools(server: McpServer): void {
     async (args) => {
       try {
         const { projectId, name } = args;
-        await n8nService.updateProject(projectId, { name });
+        await n8nServiceV2.updateProject(projectId, { name });
         return {
           content: [
             {
@@ -103,7 +103,7 @@ export function registerProjectTools(server: McpServer): void {
     async (args) => {
       try {
         const { projectId } = args;
-        await n8nService.deleteProject(projectId);
+        await n8nServiceV2.deleteProject(projectId);
         return {
           content: [
             {

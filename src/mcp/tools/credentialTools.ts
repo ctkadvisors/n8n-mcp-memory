@@ -1,6 +1,6 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { z } from 'zod';
-import { n8nService } from '../../services/n8nService.js';
+import { n8nServiceV2 } from '../../services/n8nServiceV2.js';
 
 // Define schemas for credential-related operations
 const createCredentialSchema = {
@@ -31,7 +31,7 @@ export function registerCredentialTools(server: McpServer): void {
     async (args) => {
       try {
         const { name, type, data } = args;
-        const result = await n8nService.createCredential({
+        const result = await n8nServiceV2.createCredential({
           name,
           type,
           data,
@@ -70,7 +70,7 @@ export function registerCredentialTools(server: McpServer): void {
     async (args) => {
       try {
         const { credentialId } = args;
-        const result = await n8nService.deleteCredential(credentialId);
+        const result = await n8nServiceV2.deleteCredential(credentialId);
         return {
           content: [
             {
@@ -105,7 +105,7 @@ export function registerCredentialTools(server: McpServer): void {
     async (args) => {
       try {
         const { credentialId, destinationProjectId } = args;
-        await n8nService.transferCredential(credentialId, {
+        await n8nServiceV2.transferCredential(credentialId, {
           destinationProjectId,
         });
         return {

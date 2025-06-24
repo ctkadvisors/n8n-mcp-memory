@@ -1,11 +1,11 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { registerN8nIntegration } from '../mcp/n8nIntegration.js';
-import { n8nService } from '../services/n8nService.js';
+import { n8nServiceV2 } from '../services/n8nServiceV2.js';
 import { z } from 'zod';
 
-// Mock the n8nService
-jest.mock('../services/n8nService.js', () => ({
-  n8nService: {
+// Mock the n8nServiceV2
+jest.mock('../services/n8nServiceV2.js', () => ({
+  n8nServiceV2: {
     getWorkflows: jest.fn(),
     getWorkflow: jest.fn(),
     getWorkflowTags: jest.fn(),
@@ -53,30 +53,30 @@ describe('Integration Test', () => {
     // Reset mocks
     jest.clearAllMocks();
 
-    // Mock the n8nService methods
-    (n8nService.getWorkflows as jest.Mock).mockResolvedValue(mockWorkflows);
-    (n8nService.getWorkflow as jest.Mock).mockResolvedValue(mockWorkflow);
-    (n8nService.getWorkflowTags as jest.Mock).mockResolvedValue(mockTags);
-    (n8nService.getTags as jest.Mock).mockResolvedValue(mockTagsResponse);
-    (n8nService.createWorkflow as jest.Mock).mockResolvedValue({
+    // Mock the n8nServiceV2 methods
+    (n8nServiceV2.getWorkflows as jest.Mock).mockResolvedValue(mockWorkflows);
+    (n8nServiceV2.getWorkflow as jest.Mock).mockResolvedValue(mockWorkflow);
+    (n8nServiceV2.getWorkflowTags as jest.Mock).mockResolvedValue(mockTags);
+    (n8nServiceV2.getTags as jest.Mock).mockResolvedValue(mockTagsResponse);
+    (n8nServiceV2.createWorkflow as jest.Mock).mockResolvedValue({
       ...mockWorkflow,
       id: 'new-workflow-id',
     });
-    (n8nService.updateWorkflow as jest.Mock).mockResolvedValue({
+    (n8nServiceV2.updateWorkflow as jest.Mock).mockResolvedValue({
       ...mockWorkflow,
       name: 'Updated Workflow',
     });
-    (n8nService.deleteWorkflow as jest.Mock).mockResolvedValue(mockWorkflow);
-    (n8nService.activateWorkflow as jest.Mock).mockResolvedValue({
+    (n8nServiceV2.deleteWorkflow as jest.Mock).mockResolvedValue(mockWorkflow);
+    (n8nServiceV2.activateWorkflow as jest.Mock).mockResolvedValue({
       ...mockWorkflow,
       active: true,
     });
-    (n8nService.deactivateWorkflow as jest.Mock).mockResolvedValue({
+    (n8nServiceV2.deactivateWorkflow as jest.Mock).mockResolvedValue({
       ...mockWorkflow,
       active: false,
     });
-    (n8nService.transferWorkflow as jest.Mock).mockResolvedValue({ success: true });
-    (n8nService.updateWorkflowTags as jest.Mock).mockResolvedValue(mockTags);
+    (n8nServiceV2.transferWorkflow as jest.Mock).mockResolvedValue({ success: true });
+    (n8nServiceV2.updateWorkflowTags as jest.Mock).mockResolvedValue(mockTags);
 
     // Create a real server
     server = new McpServer({

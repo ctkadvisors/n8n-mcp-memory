@@ -1,6 +1,6 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { z } from 'zod';
-import { n8nService } from '../../services/n8nService.js';
+import { n8nServiceV2 } from '../../services/n8nServiceV2.js';
 
 // Define schemas for tag-related operations
 const createTagSchema = {
@@ -29,7 +29,7 @@ export function registerTagTools(server: McpServer): void {
     async (args) => {
       try {
         const { name } = args;
-        const result = await n8nService.createTag({ name });
+        const result = await n8nServiceV2.createTag({ name });
         return {
           content: [
             {
@@ -62,7 +62,7 @@ export function registerTagTools(server: McpServer): void {
     async (args) => {
       try {
         const { tagId, name } = args;
-        const result = await n8nService.updateTag(tagId, { name });
+        const result = await n8nServiceV2.updateTag(tagId, { name });
         return {
           content: [
             {
@@ -95,7 +95,7 @@ export function registerTagTools(server: McpServer): void {
     async (args) => {
       try {
         const { tagId } = args;
-        const result = await n8nService.deleteTag(tagId);
+        const result = await n8nServiceV2.deleteTag(tagId);
         return {
           content: [
             {

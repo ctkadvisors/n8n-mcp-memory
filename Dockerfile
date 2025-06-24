@@ -5,8 +5,8 @@ WORKDIR /app
 # Install pnpm
 RUN npm install -g pnpm
 
-# Copy package.json and package-lock.json
-COPY package*.json ./
+# Copy package.json and pnpm-lock.yaml
+COPY package*.json pnpm-lock.yaml* ./
 
 # Install dependencies
 RUN pnpm install
@@ -29,10 +29,5 @@ EXPOSE 3000
 # Set environment variables
 ENV NODE_ENV=production
 
-# Copy the Docker-optimized versions of the bridge and wrapper scripts
-# These .new files are specifically designed for the Docker container
-COPY mcp-bridge.js.new /app/mcp-bridge.js
-COPY mcp-wrapper.sh.new /app/mcp-wrapper.sh
-
-# Command to run the bridge with our wrapper script
-CMD ["./mcp-wrapper.sh"]
+# For Claude Code MCP integration, run the server directly
+CMD ["node", "dist/server.js"]

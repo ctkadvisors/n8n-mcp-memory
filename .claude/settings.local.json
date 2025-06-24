@@ -1,0 +1,33 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(rg:*)",
+      "Bash(find:*)",
+      "Bash(rm:*)",
+      "Bash(grep:*)",
+      "Bash(pnpm run:*)",
+      "Bash(timeout 10s pnpm run start)",
+      "Bash(gtimeout:*)",
+      "Bash(curl:*)",
+      "Bash(pkill:*)",
+      "Bash(true)",
+      "Bash(docker build:*)",
+      "Bash(docker run:*)",
+      "WebFetch(domain:docs.anthropic.com)",
+      "Bash(claude mcp add:*)",
+      "Bash(claude mcp:*)",
+      "Bash(docker logs:*)",
+      "mcp__ide__executeCode",
+      "mcp__ide__getDiagnostics",
+      "Bash(printenv)",
+      "Bash(docker stop:*)",
+      "mcp__n8n-mcp__listWorkflows",
+      "mcp__n8n-mcp__getWorkflowDetails",
+      "mcp__n8n-mcp__createWorkflow",
+      "mcp__n8n-mcp__getNodeDocumentation",
+      "mcp__n8n-mcp__searchNodeDocumentation",
+      "Bash(git add:*)"
+    ],
+    "deny": []
+  }
+}

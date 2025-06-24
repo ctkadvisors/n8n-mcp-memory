@@ -1,6 +1,6 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { z } from 'zod';
-import { n8nService } from '../../services/n8nService.js';
+import { n8nServiceV2 } from '../../services/n8nServiceV2.js';
 
 // Define schemas for user-related operations
 const createUsersSchema = {
@@ -34,7 +34,7 @@ export function registerUserTools(server: McpServer): void {
     async (args) => {
       try {
         const { users } = args;
-        const result = await n8nService.createUsers(users);
+        const result = await n8nServiceV2.createUsers(users);
         return {
           content: [
             {
@@ -69,7 +69,7 @@ export function registerUserTools(server: McpServer): void {
     async (args) => {
       try {
         const { userIdOrEmail } = args;
-        await n8nService.deleteUser(userIdOrEmail);
+        await n8nServiceV2.deleteUser(userIdOrEmail);
         return {
           content: [
             {
@@ -103,7 +103,7 @@ export function registerUserTools(server: McpServer): void {
     async (args) => {
       try {
         const { userIdOrEmail, newRoleName } = args;
-        await n8nService.changeUserRole(userIdOrEmail, { newRoleName });
+        await n8nServiceV2.changeUserRole(userIdOrEmail, { newRoleName });
         return {
           content: [
             {

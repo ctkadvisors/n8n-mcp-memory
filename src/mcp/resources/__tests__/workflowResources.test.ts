@@ -1,10 +1,10 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { registerWorkflowResources } from '../workflowResources.js';
-import { n8nService } from '../../../services/n8nService.js';
+import { n8nServiceV2 } from '../../../services/n8nServiceV2.js';
 
-// Mock the n8nService
-jest.mock('../../../services/n8nService.js', () => ({
-  n8nService: {
+// Mock the n8nServiceV2
+jest.mock('../../../services/n8nServiceV2.js', () => ({
+  n8nServiceV2: {
     getWorkflows: jest.fn(),
     getWorkflow: jest.fn(),
     getWorkflowTags: jest.fn(),
@@ -48,10 +48,10 @@ describe('workflowResources', () => {
     // Reset mocks
     jest.clearAllMocks();
 
-    // Mock the n8nService methods
-    (n8nService.getWorkflows as jest.Mock).mockResolvedValue(mockWorkflows);
-    (n8nService.getWorkflow as jest.Mock).mockResolvedValue(mockWorkflow);
-    (n8nService.getWorkflowTags as jest.Mock).mockResolvedValue(mockTags);
+    // Mock the n8nServiceV2 methods
+    (n8nServiceV2.getWorkflows as jest.Mock).mockResolvedValue(mockWorkflows);
+    (n8nServiceV2.getWorkflow as jest.Mock).mockResolvedValue(mockWorkflow);
+    (n8nServiceV2.getWorkflowTags as jest.Mock).mockResolvedValue(mockTags);
 
     // Create a mock server
     server = {
@@ -92,7 +92,7 @@ describe('workflowResources', () => {
 
     const result = await handler(uri);
 
-    expect(n8nService.getWorkflows).toHaveBeenCalled();
+    expect(n8nServiceV2.getWorkflows).toHaveBeenCalled();
     expect(result).toEqual({
       contents: [
         {
@@ -110,7 +110,7 @@ describe('workflowResources', () => {
 
     const result = await handler(uri, params);
 
-    expect(n8nService.getWorkflow).toHaveBeenCalledWith('workflow1');
+    expect(n8nServiceV2.getWorkflow).toHaveBeenCalledWith('workflow1');
     expect(result).toEqual({
       contents: [
         {
@@ -128,7 +128,7 @@ describe('workflowResources', () => {
 
     const result = await handler(uri, params);
 
-    expect(n8nService.getWorkflowTags).toHaveBeenCalledWith('workflow1');
+    expect(n8nServiceV2.getWorkflowTags).toHaveBeenCalledWith('workflow1');
     expect(result).toEqual({
       contents: [
         {
@@ -144,7 +144,7 @@ describe('workflowResources', () => {
     const uri = { href: 'n8n://workflows' };
     const error = new Error('API error');
 
-    (n8nService.getWorkflows as jest.Mock).mockRejectedValue(error);
+    (n8nServiceV2.getWorkflows as jest.Mock).mockRejectedValue(error);
 
     const result = await handler(uri);
 
@@ -165,7 +165,7 @@ describe('workflowResources', () => {
     const params = { workflowId: 'workflow1' };
     const error = new Error('API error');
 
-    (n8nService.getWorkflow as jest.Mock).mockRejectedValue(error);
+    (n8nServiceV2.getWorkflow as jest.Mock).mockRejectedValue(error);
 
     const result = await handler(uri, params);
 
@@ -186,7 +186,7 @@ describe('workflowResources', () => {
     const params = { workflowId: 'workflow1' };
     const error = new Error('API error');
 
-    (n8nService.getWorkflowTags as jest.Mock).mockRejectedValue(error);
+    (n8nServiceV2.getWorkflowTags as jest.Mock).mockRejectedValue(error);
 
     const result = await handler(uri, params);
 

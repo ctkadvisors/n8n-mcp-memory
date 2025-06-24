@@ -1,5 +1,5 @@
 import { McpServer, ResourceTemplate } from '@modelcontextprotocol/sdk/server/mcp.js';
-import { n8nService } from '../../services/n8nService.js';
+import { n8nServiceV2 } from '../../services/n8nServiceV2.js';
 
 /**
  * Register variable-related resources with the MCP server
@@ -25,7 +25,7 @@ export function registerVariableResources(server: McpServer): void {
           cursor: url.searchParams.get('cursor') || undefined,
         };
 
-        const variables = await n8nService.getVariables(params);
+        const variables = await n8nServiceV2.getVariables(params);
         return {
           contents: [
             {

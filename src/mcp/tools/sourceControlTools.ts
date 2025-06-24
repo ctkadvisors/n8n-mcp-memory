@@ -1,6 +1,6 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { z } from 'zod';
-import { n8nService } from '../../services/n8nService.js';
+import { n8nServiceV2 } from '../../services/n8nServiceV2.js';
 
 // Define schemas for source control operations
 const pullSchema = {
@@ -21,7 +21,7 @@ export function registerSourceControlTools(server: McpServer): void {
     async (args) => {
       try {
         const { force, variables } = args;
-        const result = await n8nService.pullFromSourceControl({
+        const result = await n8nServiceV2.pullFromSourceControl({
           force,
           variables,
         });

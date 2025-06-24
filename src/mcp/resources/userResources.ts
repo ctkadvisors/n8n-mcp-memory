@@ -1,5 +1,5 @@
 import { McpServer, ResourceTemplate } from '@modelcontextprotocol/sdk/server/mcp.js';
-import { n8nService } from '../../services/n8nService.js';
+import { n8nServiceV2 } from '../../services/n8nServiceV2.js';
 
 /**
  * Register user-related resources with the MCP server
@@ -27,7 +27,7 @@ export function registerUserResources(server: McpServer): void {
           includeRole: url.searchParams.get('includeRole') === 'true',
         };
 
-        const users = await n8nService.getUsers(params);
+        const users = await n8nServiceV2.getUsers(params);
         return {
           contents: [
             {
@@ -70,7 +70,7 @@ export function registerUserResources(server: McpServer): void {
         const url = new URL(uri.href);
         const includeRole = url.searchParams.get('includeRole') === 'true';
 
-        const user = await n8nService.getUser(id, includeRole);
+        const user = await n8nServiceV2.getUser(id, includeRole);
         return {
           contents: [
             {

@@ -1,5 +1,5 @@
 import { McpServer, ResourceTemplate } from '@modelcontextprotocol/sdk/server/mcp.js';
-import { n8nService } from '../../services/n8nService.js';
+import { n8nServiceV2 } from '../../services/n8nServiceV2.js';
 
 /**
  * Register execution-related resources with the MCP server
@@ -34,7 +34,7 @@ export function registerExecutionResources(server: McpServer): void {
           params.status = status;
         }
 
-        const executions = await n8nService.getExecutions(params);
+        const executions = await n8nServiceV2.getExecutions(params);
         return {
           contents: [
             {
@@ -80,7 +80,7 @@ export function registerExecutionResources(server: McpServer): void {
         const url = new URL(uri.href);
         const includeData = url.searchParams.get('includeData') === 'true';
 
-        const execution = await n8nService.getExecution(id, includeData);
+        const execution = await n8nServiceV2.getExecution(id, includeData);
         return {
           contents: [
             {
