@@ -63,7 +63,9 @@ Add to your Claude Desktop configuration:
 
 ### Augment (VS Code)
 
-Configure in Augment settings:
+#### Option 1: Local Docker Container
+
+Configure in Augment settings for local development:
 
 ```json
 "augment.advanced": {
@@ -81,6 +83,37 @@ Configure in Augment settings:
   ]
 }
 ```
+
+#### Option 2: Remote HTTP MCP Server (Recommended for Production)
+
+If you have the MCP server running remotely (e.g., at `https://n8n-mcp.knuteson.io/`):
+
+**Method A: Using Augment UI**
+
+1. Open Augment in VS Code
+2. Click **"Add HTTP MCP"**
+3. Configure:
+   - **Name**: `n8n-mcp-memory`
+   - **URL**: `https://your-mcp-server-domain.com/mcp`
+
+**Method B: Manual Configuration**
+
+```json
+"augment.advanced": {
+  "mcpServers": [
+    {
+      "name": "n8n-mcp-memory",
+      "endpoint": "https://your-mcp-server-domain.com/mcp"
+    }
+  ]
+}
+```
+
+**Verification Steps:**
+
+1. Check server health: `https://your-mcp-server-domain.com/api/health`
+2. View capabilities: `https://your-mcp-server-domain.com/api/capabilities`
+3. Test in Augment: Ask "List my n8n workflows"
 
 ## Resources and Tools
 

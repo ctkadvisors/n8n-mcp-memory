@@ -4,10 +4,11 @@ This guide will help you set up the n8n-mcp server with Augment to enable n8n wo
 
 ## Prerequisites
 
-1. Docker installed on your machine
-2. n8n-mcp-bridge Docker image built
-3. Augment extension installed in VS Code
-4. n8n API key
+1. Augment extension installed in VS Code
+2. n8n API key
+3. Either:
+   - Docker installed (for local setup), OR
+   - Access to a remote MCP server (e.g., `https://n8n-mcp.knuteson.io/`)
 
 ## Building the n8n-mcp Docker Image
 
@@ -17,11 +18,56 @@ If you haven't already built the Docker image, run the following command in the 
 docker build -t n8n-mcp-bridge .
 ```
 
-## Configuring Augment
+## Setup Options
 
-There are two ways to configure MCP servers in Augment:
+Choose one of the following setup methods based on your needs:
 
-### Option 1: Using the Augment Settings Panel (Recommended)
+### Option A: Remote HTTP MCP Server (Recommended for Production)
+
+If you have access to a remote MCP server (like `https://n8n-mcp.knuteson.io/`), this is the simplest option.
+
+#### Method 1: Using Augment UI (Easiest)
+
+1. Open VS Code with Augment extension
+2. Open the Augment panel (click the Augment icon in sidebar)
+3. Click **"Add HTTP MCP"**
+4. Configure:
+   - **Name**: `n8n-mcp-memory`
+   - **URL**: `https://your-mcp-server-domain.com/mcp` (e.g., `https://n8n-mcp.knuteson.io/mcp`)
+5. Save the configuration
+
+#### Method 2: Manual Configuration
+
+1. Press Cmd/Ctrl+Shift+P to open the command palette
+2. Type "Preferences: Open Settings (JSON)" and select it
+3. Add the following configuration to your settings.json file:
+
+```json
+"augment.advanced": {
+  "mcpServers": [
+    {
+      "name": "n8n-mcp-memory",
+      "endpoint": "https://your-mcp-server-domain.com/mcp"
+    }
+  ]
+}
+```
+
+#### Verification for Remote Setup
+
+1. Check server health: Visit `https://your-mcp-server-domain.com/api/health`
+2. View capabilities: Visit `https://your-mcp-server-domain.com/api/capabilities`
+3. Test in Augment: Ask "List my n8n workflows"
+
+### Option B: Local Docker Container
+
+If you want to run the MCP server locally using Docker:
+
+## Configuring Augment for Local Docker
+
+There are two ways to configure local MCP servers in Augment:
+
+#### Method 1: Using the Augment Settings Panel (Recommended)
 
 1. Open VS Code
 2. Click on the Augment icon in the sidebar
@@ -31,7 +77,7 @@ There are two ways to configure MCP servers in Augment:
    - Command: docker
    - Args: run -i --rm -p 3003:3000 -v n8n_mcp_cache:/app/cache -e N8N_API_URL=https://your-n8n-instance.cloud/api/v1 -e N8N_API_KEY=your-api-key-here n8n-mcp-bridge
 
-### Option 2: Editing settings.json Directly
+#### Method 2: Editing settings.json Directly
 
 1. Press Cmd/Ctrl+Shift+P to open the command palette
 2. Type "Preferences: Open Settings (JSON)" and select it

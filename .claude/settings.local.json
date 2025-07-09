@@ -26,7 +26,12 @@
       "mcp__n8n-mcp__createWorkflow",
       "mcp__n8n-mcp__getNodeDocumentation",
       "mcp__n8n-mcp__searchNodeDocumentation",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git tag:*)",
+      "Bash(git push:*)",
+      "Bash(docker tag:*)",
+      "Bash(docker push:*)"
     ],
     "deny": []
   }
